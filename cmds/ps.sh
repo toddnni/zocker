@@ -54,14 +54,10 @@ do
 		status=up
 	else
 		ip=-
-		status=clean
-		if [ -f "$jails_dir/run/$jail.exit" ]
-		then
-			status="exit(`cat $jails_dir/run/$jail.exit`)"
-		fi
+		status=down
 	fi
 	if [ "$status" = 'up' ] || [ -n "$all" ]
 	then
-		printf "%-12s %s %s %-7s %-15s %-13s %-20s\n" "$jail" "$imageid" "$date" "$status" "$ip" "$usage" "'$cmd'"
+		printf "%-12s %s %s %-4s %-15s %-13s %-20s\n" "$jail" "$imageid" "$date" "$status" "$ip" "$usage" "'$cmd'"
 	fi
 done

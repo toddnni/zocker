@@ -10,7 +10,10 @@ help() {
 	echo "usage: start [-h] [-i] <container>"
 	echo "where"
 	echo " -h prints help"
-	echo " -i run in interactive mode"
+}
+
+clean() {
+	jail -f "$jails_dir/run/$jail.conf" -r "$jail"
 }
 
 ## Main
@@ -19,14 +22,9 @@ help() {
 load_configs
 check_zfs_dirs
 
-interactive=
-
-while getopts ih arg
+while getopts h arg
 do
 	case "$arg" in
-		i)
-			interactive=1
-			;;
 		h)
 			help
 			exit 0
@@ -48,9 +46,6 @@ fi
 jail="$1"
 
 jails_dir=`get_zfs_path "$ZFS_FS/jails"`
-if [ -n "$interactive" ]
-then
-	exec sh "$LIB"/jail_wrapper.sh "$jails_dir/run" "$jail" ''
-else
-	exec sh "$LIB"/jail_wrapper.sh "$jails_dir/run" "$jail" 'log' < /dev/null > /dev/null &
-fi
+trap clean
+jail -f "$jails_dir/run/$jail.conf" -c "$jail" || true
+clean

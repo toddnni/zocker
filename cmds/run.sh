@@ -16,7 +16,6 @@ help() {
 	echo " -u user         set user in container context"
 	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
 	echo " -l [host|none]  networking (def. host)"
-	echo " -i              run in interactive mode"
 }
 
 ## Main
@@ -26,15 +25,11 @@ load_configs
 check_zfs_dirs
 
 createargs=
-interactive=
-while getopts f:n:e:u:v:l:ih arg
+while getopts f:n:e:u:v:l:h arg
 do
 	case "$arg" in
 		f|n|e|u|v|l)
 			createargs="$createargs -$arg $OPTARG"
-			;;
-		i)
-			interactive=-i
 			;;
 		h)
 			help
@@ -55,4 +50,4 @@ then
 fi
 
 name=`sh "$CMDS"/create.sh $createargs $@`
-sh "$CMDS"/start.sh $interactive "$name"
+sh "$CMDS"/start.sh "$name"
