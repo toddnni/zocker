@@ -119,7 +119,7 @@ net=
 volumes=
 # These will override image settings
 uuid=`uuidgen`
-name=`echo "$uuid" | head -c 8`
+name=`echo "$uuid" | head -c 8 | tr '0-9' 'a-j'`
 hostname="$name"
 
 while getopts f:n:e:u:v:l:h arg
