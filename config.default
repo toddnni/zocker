@@ -1,0 +1,5 @@
+# To override these values define them in file 'config'
+ZFS_FS=zocker
+HOST_INTERFACE=trunk0
+REPOSITORY=zocker@test.example.com
+DIR_IN_REPO=zocker_images

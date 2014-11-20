@@ -1,0 +1,28 @@
+#!/bin/sh
+set -u
+set -e
+
+export DIR=`dirname $0`
+export CMDS="$DIR/cmds"
+export LIB="$DIR/lib"
+
+cmd=default
+if [ $# -gt 0 ]
+then
+	cmd="$1"
+	shift
+fi
+
+if ! [ -e "$CMDS/$cmd".sh ]
+then
+	echo "usage: $0 <cmd> <opts>"
+	echo "where <cmd> in"
+	for cmd in "$CMDS"/*.sh
+	do
+		echo -n "  `basename $cmd .sh` - " 
+		INFO=1 sh "$cmd"
+	done
+	echo "and <opts> are <cmd> specific"
+else
+	sh "$CMDS/$cmd".sh $@
+fi
