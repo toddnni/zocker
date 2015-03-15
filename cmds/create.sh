@@ -32,16 +32,29 @@ create_scratch() {
 
 # next use all argv variables
 
-read_args_from_image_if_not_set() {
+read_and_merge_vars_from_images() {
 	local imageid image_dir
 	imageid="$1"
 	image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
-	for var in imageid parent cmd hostname name env user net volumes uuid
+	for var in imageid parent cmd hostname name user net uuid
 	do
 		if eval "[ -z \"\$${var}\" ]" && [ -f "$image_dir/$var" ]
 		then
 			val="`cat $image_dir/$var`"
-			eval "${var}='${val}'"
+			eval "${var}"='${val}'
+		fi
+	done
+	for var in env volumes
+	do
+		if [ -f "$image_dir/$var" ]
+		then
+			val="`cat $image_dir/$var`"
+			if eval "[ -n \"\$${var}\" ]"
+			then
+				eval "${var}"='${val}\ '"\"\$${var}\""
+			else
+				eval "${var}"='${val}'
+			fi
 		fi
 	done
 }
@@ -183,7 +196,7 @@ then
 	exit 1
 fi
 
-read_args_from_image_if_not_set "$imageid"
+read_and_merge_vars_from_images "$imageid"
 
 set_defaults_if_not_set 
 
