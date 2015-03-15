@@ -53,7 +53,7 @@ tar -x -f - -C "$tmp_dir"
 
 if ! echo "z0" | diff -q "$tmp_dir"/VERSION -
 then
-	echo "Error: wrong VERSION in image"
+	echo "Error: wrong VERSION in image" >&2
 	rm -r "$tmp_dir"
 	exit 1
 fi

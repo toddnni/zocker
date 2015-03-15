@@ -52,7 +52,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ]
 then
-	echo "Error: Provide tag!"
+	echo "Error: Provide tag!" >&2
 	help
 	exit 1
 fi

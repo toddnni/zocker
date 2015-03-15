@@ -32,7 +32,7 @@ check_base_defined() {
 	base_image="$1"
 	if [ -z "$base_image" ]
 	then
-		echo "Error: FROM must be the first instruction"
+		echo "Error: FROM must be the first instruction" >&2
 		exit 1
 	fi
 }
@@ -57,13 +57,13 @@ check_count() {
 	then
 		if [ $# -eq 0 ]
 		then
-			echo "Error: There should be at least one parameter"
+			echo "Error: There should be at least one parameter" >&2
 			exit 1
 		fi
 	else
 		if [ $# -ne "$count" ]
 		then
-			echo "Error: Parameter count doesn't match '$count'"
+			echo "Error: Parameter count doesn't match '$count'" >&2
 			exit 1
 		fi
 	fi
@@ -98,14 +98,14 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ] 
 then
-	echo "Error: Provide path (eg. .)!"
+	echo "Error: Provide path (eg. .)!" >&2
 	help
 	exit 1
 fi
 zockerfile="$1/Zockerfile"
 if ! [ -r "$zockerfile" ]
 then
-	echo "Error: Could not read Zockerfile from '$zockerfile'"
+	echo "Error: Could not read Zockerfile from '$zockerfile'" >&2
 	exit 1
 fi
 
@@ -130,7 +130,7 @@ do
 			base_image=`get_image "$1"`
 			if [ -z "$base_image" ]
 			then
-				echo "Error: Image '$1' not found!"
+				echo "Error: Image '$1' not found!" >&2
 				exit 1
 			fi
 			imageid="$base_image"
@@ -185,7 +185,7 @@ do
 			commit_and_remove_build=1
 			;;
 		*)
-			echo "Error: Unknown instruction '$instruction'!"
+			echo "Error: Unknown instruction '$instruction'!" >&2
 			exit 1
 			;;
 	esac

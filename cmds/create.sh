@@ -171,7 +171,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -eq 0 ] 
 then
-	echo "Error: Provide image name or id!"
+	echo "Error: Provide image name or id!" >&2
 	help
 	exit 1
 fi
@@ -192,7 +192,7 @@ then
 fi
 if [ -z "$imageid" ]
 then
-	echo "Error: image '$image' not found!"
+	echo "Error: image '$image' not found!" >&2
 	exit 1
 fi
 

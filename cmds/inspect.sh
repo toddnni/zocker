@@ -40,7 +40,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ]
 then
-	echo "Error: Provide image or container name!"
+	echo "Error: Provide image or container name!" >&2
 	help
 	exit 1
 fi
@@ -55,7 +55,7 @@ else
 	then
 		path=`get_zfs_path "$ZFS_FS/images/$imageid"`
 	else
-		echo "Error: Image or container '$target' not found!"
+		echo "Error: Image or container '$target' not found!" >&2
 		exit 1
 	fi
 fi

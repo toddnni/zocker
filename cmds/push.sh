@@ -91,7 +91,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ]
 then
-	echo "Error: Provide tag!"
+	echo "Error: Provide tag!" >&2
 	help
 	exit 1
 fi
@@ -102,7 +102,7 @@ if [ -f "$tags_dir/$tag" ]
 then
 	imageid=`cat "$tags_dir/$tag"`
 else
-	echo "Error: Image tag '$tag' not found!"
+	echo "Error: Image tag '$tag' not found!" >&2
 	help
 	exit 1
 fi

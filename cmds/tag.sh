@@ -33,7 +33,7 @@ tag="$2"
 imageid=`get_image "$image"`
 if [ -z "$imageid" ]
 then
-	echo "Error: Image '$image' not found!"
+	echo "Error: Image '$image' not found!" >&2
 	exit 1
 fi
 

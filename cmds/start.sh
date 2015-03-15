@@ -39,7 +39,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ]
 then
-	echo "Error: Provide container name!"
+	echo "Error: Provide container name!" >&2
 	help
 	exit 1
 fi

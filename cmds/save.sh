@@ -34,7 +34,7 @@ shift $(( $OPTIND-1 ))
 
 if [ $# -ne 1 ]
 then
-	echo "Error: Provide image name!"
+	echo "Error: Provide image name!" >&2
 	help
 	exit 1
 fi
@@ -43,7 +43,7 @@ image="$1"
 imageid=`get_image "$image"`
 if [ -z "$imageid" ]
 then
-	echo "Error: Image '$image' not found!"
+	echo "Error: Image '$image' not found!" >&2
 	help
 	exit 1
 fi

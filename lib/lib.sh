@@ -12,7 +12,7 @@ check_zfs_fs() {
 check_zfs_dirs() {
 	if ! check_zfs_fs "$ZFS_FS"
 	then
-		echo "Error: ZFS filesystem '$ZFS_FS' not found!"
+		echo "Error: ZFS filesystem '$ZFS_FS' not found!" >&2
 		exit 1
 	fi
 	check_zfs_fs "$ZFS_FS/images" || zfs create "$ZFS_FS/images"
@@ -95,7 +95,7 @@ clone_parent_and_receive_on_new_image() {
 test_repository_connection_or_exit() {
 	if ! ssh "$REPOSITORY" ls > /dev/null
 	then
-		echo "Error: Could not connect to repository!"
+		echo "Error: Could not connect to repository!" >&2
 		exit 1
 	fi
 }
