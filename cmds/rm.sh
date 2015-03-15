@@ -36,7 +36,16 @@ do
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 	imageid="`cat $jails_dir/$jail/imageid`"
 
-	zfs destroy "$ZFS_FS/jails/$jail"/z
+	# Destroy will fail for some reason and sync doesn't help, lets do it
+	# few times
+	echo -n "Waiting for filesystem to destroy "
+	for i in `seq 1 60`
+	do
+		sleep 1
+		zfs destroy "$ZFS_FS/jails/$jail"/z 2>/dev/null && break || echo -n '.'
+	done
+	echo
+
 	zfs destroy "$ZFS_FS/jails/$jail"
 	rm -f "$jails_dir/run/$jail".*
 done
