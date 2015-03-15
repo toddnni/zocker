@@ -1,6 +1,6 @@
 if [ -n "$INFO" ]
 then
-	echo "Stream out tar archived image to STDOUT"
+	echo "Stream to STDOUT a tar archived image"
 	exit 0
 fi
 set -u 

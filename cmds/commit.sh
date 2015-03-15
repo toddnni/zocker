@@ -1,6 +1,6 @@
 if [ -n "$INFO" ]
 then
-	echo "Snapshot container to image"
+	echo "Snapshot a container into an image"
 	exit 0
 fi
 set -u

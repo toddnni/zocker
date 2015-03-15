@@ -1,6 +1,6 @@
 if [ -n "$INFO" ]
 then
-	echo "Load tar archived image from STDIN"
+	echo "Load a tar archived image from STDIN"
 	exit 0
 fi
 set -u 
