@@ -83,7 +83,6 @@ generate_run_config() {
 	mkdir -p "$jails_dir/$name/z/etc/"
 	cp -a /etc/resolv.conf /etc/localtime "$jails_dir/$name/z/etc/"
 
-	# TODO env
 	net_line="ip4=new;
 ip_hostname;"
 	if [ "$net" = 'none' ]
@@ -101,7 +100,7 @@ ip_hostname;"
 	path='$jails_dir/$name/z';
        	mount.fstab='$jails_dir/run/$name.fstab';
 	exec.jail_user='$user';
-        exec.start='$cmd';
+        exec.start='env $env $cmd';
 }
 EOF
 }
