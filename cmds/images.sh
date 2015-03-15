@@ -7,7 +7,9 @@ set -u
 set -e
 
 help() {
-	echo "usage: images [-h]"
+	echo "usage: images [-a] [-h]"
+	echo "where"
+	echo " -a list also untagged intermediate images"
 }
 
 ## Main
@@ -16,21 +18,25 @@ help() {
 load_configs
 check_zfs_dirs
 
-if [ $# -eq 1 ]
-then
-	help
-	if [ "$1" = '-h' ]
-	then
-		exit 0
-	else
-		exit 1
-	fi
-fi
-if [ $# -ge 2 ]
-then
-	help
-	exit 1
-fi
+all=
+
+while getopts ah arg
+do
+	case "$arg" in
+		a)
+			all=1
+			;;
+		h)
+			help
+			exit 0
+			;;
+		*)
+			help
+			exit 1
+			;;
+	esac
+done
+shift $(( $OPTIND-1 ))
 
 images_dir=`get_zfs_path "$ZFS_FS/images"`
 format="%-12s %-${UUID_LENGTH}s %-${DATE_LENGTH}s   %-13s %-${UUID_LENGTH}s\n"
@@ -38,6 +44,12 @@ printf "$format" TAG IMAGEID DATE USAGE PARENT
 for imageid in `ls -t "$images_dir" | grep -v tags`
 do
 	tags=`find_image_tags "$imageid"`
+	# Hide untagged intermediate images
+	if [ -z "$all" ] && [ -z "$tags" ] && grep -q "$imageid" "$images_dir"/*/parent
+	then
+		continue
+	fi
+
 	if [ -z "$tags" ]
 	then
 		tags=-
