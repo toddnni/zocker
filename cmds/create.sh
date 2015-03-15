@@ -87,7 +87,7 @@ generate_run_config() {
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 
 	echo "# Device Mountpoint FStype Options Dump Pass#" > "$jails_dir/run/$name.fstab"
-	echo -n "$volumes" | awk -F : '{print $1 " " $2 " " $3}' | while read host_source jail_target rwro
+	echo -n "$volumes" | awk -v RS=' ' -F : '{print $1 " " $2 " " $3}' | while read host_source jail_target rwro
 	do
 		echo "$host_source $jails_dir/$name/z/$jail_target nullfs $rwro 0 0" >> "$jails_dir/run/$name.fstab"
 	done
