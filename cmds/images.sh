@@ -33,6 +33,8 @@ then
 fi
 
 images_dir=`get_zfs_path "$ZFS_FS/images"`
+format="%-12s %-${UUID_LENGTH}s %-${DATE_LENGTH}s   %-13s %-${UUID_LENGTH}s\n"
+printf "$format" TAG IMAGEID DATE USAGE PARENT
 for imageid in `ls -t "$images_dir" | grep -v tags`
 do
 	tags=`find_image_tags "$imageid"`
@@ -49,6 +51,6 @@ do
 	usage=`get_space_usage "$ZFS_FS/images/$imageid/z"`
 	for tag in $tags
 	do
-		printf '%-12s %s %s   %-13s %s\n' "$tag" "$imageid" "$date" "$usage" "$parent"
+		printf "$format" "$tag" "$imageid" "$date" "$usage" "$parent"
 	done
 done

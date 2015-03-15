@@ -1,3 +1,5 @@
+UUID_LENGTH=36
+
 load_configs() {
 	. "$DIR/config.default"
 	[ -f "$DIR/config" ] && . "$DIR/config"
@@ -27,6 +29,7 @@ get_zfs_origin() {
 	zfs get -H -o value origin "$1"
 }
 
+DATE_LENGTH=21
 get_zfs_date() {
 	zfs get -H -o value creation "$1"
 }
