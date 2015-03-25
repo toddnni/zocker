@@ -2,7 +2,8 @@
 set -u
 set -e
 
-export DIR=`dirname $0`
+real0=`realpath $0`
+export DIR=`dirname "$real0"`
 export CMDS="$DIR/cmds"
 export LIB="$DIR/lib"
 
