@@ -102,10 +102,10 @@ then
 	help
 	exit 1
 fi
-zockerfile="$1/Zockerfile"
-if ! [ -r "$zockerfile" ]
+cd "$1"
+if ! [ -r 'Zockerfile' ]
 then
-	echo "Error: Could not read Zockerfile from '$zockerfile'" >&2
+	echo "Error: Could not read Zockerfile from dir '$1'" >&2
 	exit 1
 fi
 
@@ -196,7 +196,7 @@ do
 	fi
 	echo "# - $imageid"
 
-done < "$zockerfile"
+done < Zockerfile
 
 if [ -n "$tag" ]
 then
