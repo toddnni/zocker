@@ -132,17 +132,18 @@ volumes=
 # These will override image settings
 uuid=`uuidgen`
 name=`echo "$uuid" | head -c 8 | tr '0-9' 'a-j'`
-hostname="$name"
+hostname=
+hostname_set=
 
 while getopts f:n:e:u:v:l:h arg
 do
 	case "$arg" in
 		f)
 			hostname="$OPTARG"
+			hostname_set=y
 			;;
 		n)
 			name="$OPTARG"
-			hostname="$name"
 			;;
 		e)
 			env="$env $OPTARG"
@@ -194,6 +195,11 @@ if [ -z "$imageid" ]
 then
 	echo "Error: image '$image' not found!" >&2
 	exit 1
+fi
+
+if [ -z "$hostname_set" ]
+then
+	hostname="$name"
 fi
 
 read_and_merge_vars_from_images "$imageid"
