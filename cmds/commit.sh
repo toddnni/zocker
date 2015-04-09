@@ -69,6 +69,9 @@ zfs destroy "$ZFS_FS/images/$imageid"/z@clean
 rm -f "$image_dir/z/etc/resolv.conf" "$image_dir/z/etc/localtime"
 zfs snapshot "$ZFS_FS/images/$imageid"/z@clean
 
+# update image dir timestamp
+touch "$image_dir"
+
 freeze_image "$imageid"
 
 if [ -n "$tag" ]
