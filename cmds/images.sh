@@ -39,7 +39,7 @@ done
 shift $(( $OPTIND-1 ))
 
 images_dir=`get_zfs_path "$ZFS_FS/images"`
-format="%-12s %-${UUID_LENGTH}s %-${DATE_LENGTH}s   %-13s %-${UUID_LENGTH}s\n"
+format="%-16s %-${UUID_LENGTH}s %-${DATE_LENGTH}s   %-13s %-${UUID_LENGTH}s\n"
 printf "$format" TAG IMAGEID DATE USAGE PARENT
 for imageid in `ls -t "$images_dir" | grep -v '^tags$'`
 do
