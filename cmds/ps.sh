@@ -41,7 +41,7 @@ shift $(( $OPTIND-1 ))
 jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 format="%-12s %-${UUID_LENGTH}s %-${DATE_LENGTH}s %-4s %-15s %-13s %-20s\n"
 printf "$format" JAIL IMAGEID DATE STAT IP USAGE CMD
-for jail in `ls -t "$jails_dir" | grep -v run`
+for jail in `ls -t "$jails_dir" | grep -v '^run$'`
 do
 	imageid="`cat $jails_dir/$jail/imageid`"
 	date=`get_zfs_date "$ZFS_FS/jails/$jail"`
