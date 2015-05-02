@@ -1,0 +1,9 @@
+FROM base
+
+RUN mkdir -p /root /mnt
+RUN echo "moi" > /root/file
+COPY Zockerfile /root/
+USER toor
+ENV a=2 b=3
+CMD env
+VOLUME /tmp:/mnt:ro
