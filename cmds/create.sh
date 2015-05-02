@@ -206,6 +206,9 @@ read_and_merge_vars_from_images "$imageid"
 
 set_defaults_if_not_set
 
+# Sanitize name
+name=`echo "$name" | tr './' '__'`
+
 zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
 zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z
 
