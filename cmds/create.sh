@@ -10,7 +10,7 @@ help() {
 	echo "usage: create <opts> <image> [<cmd>]"
 	echo "where <opts> are"
 	echo " -h              prints help"
-	echo " -f hostname     hostname"
+	echo " -f hostname     hostname, defaults to name"
 	echo " -n name         container name"
 	echo " -e A=X          set environment variable"
 	echo " -u user         set user in container context"
