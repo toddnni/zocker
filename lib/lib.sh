@@ -34,6 +34,23 @@ get_zfs_date() {
 	zfs get -H -o value creation "$1"
 }
 
+check_getopts_help() {
+	while getopts h arg
+	do
+		case "$arg" in
+			h)
+				help
+				exit 0
+				;;
+	
+			*)
+				help
+				exit 1
+				;;
+		esac
+	done
+}
+
 get_image() {
 	local image tags_dir
 	image="$1"

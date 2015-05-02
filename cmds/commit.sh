@@ -34,20 +34,17 @@ clone_jail_fs_to_image() {
 load_configs
 check_zfs_dirs
 
+check_getopts_help $@
+
 if [ $# -eq 0 ] || [ $# -ge 3 ]
 then
 	help
 	exit 1
 fi
-if [ "$1" = '-h' ]
-then
-	help
-	exit 0
-fi
 jail="$1"
 tag=
 if [ $# -eq 2 ]
-then 
+then
 	tag="$2"
 fi
 imageid=`uuidgen`

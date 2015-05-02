@@ -16,17 +16,13 @@ help() {
 load_configs
 check_zfs_dirs
 
+check_getopts_help $@
+
 if [ $# -eq 0 ]
 then
 	help
 	exit 1
 fi
-if [ "$1" = '-h' ]
-then
-	help
-	exit 0
-fi
-
 
 while [ $# -gt 0 ]
 do
@@ -49,4 +45,3 @@ do
 	zfs destroy "$ZFS_FS/jails/$jail"
 	rm -f "$jails_dir/run/$jail".*
 done
-

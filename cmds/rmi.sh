@@ -63,15 +63,12 @@ remove_image() {
 load_configs
 check_zfs_dirs
 
+check_getopts_help $@
+
 if [ $# -eq 0 ]
 then
 	help
 	exit 1
-fi
-if [ "$1" = '-h' ]
-then
-	help
-	exit 0
 fi
 
 while [ $# -gt 0 ]

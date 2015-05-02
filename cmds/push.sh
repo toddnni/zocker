@@ -73,21 +73,7 @@ recurse_clean_unused_images() {
 load_configs
 check_zfs_dirs
 
-while getopts h arg
-do
-	case "$arg" in
-		h)
-			help
-			exit 0
-			;;
-
-		*)
-			help
-			exit 1
-			;;
-	esac
-done
-shift $(( $OPTIND-1 ))
+check_getopts_help $@
 
 if [ $# -ne 1 ]
 then

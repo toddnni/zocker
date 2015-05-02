@@ -16,11 +16,8 @@ help() {
 load_configs
 check_zfs_dirs
 
-if [ $# -gt 0 ] && [ "$1" = '-h' ]
-then
-	help
-	exit 0
-fi
+check_getopts_help $@
+
 if [ $# -ne 2 ]
 then
 	help

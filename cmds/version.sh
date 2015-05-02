@@ -3,5 +3,4 @@ then
 	echo "Prints version"
 	exit 0
 fi
-echo "1"
-
+echo 1
