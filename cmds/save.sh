@@ -3,7 +3,7 @@ then
 	echo "Stream to STDOUT a tar archived image"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -61,7 +61,7 @@ mkdir -p "$tmp_dir"
 echo "z0" > "$tmp_dir"/VERSION
 if [ -n "$parent" ]
 then
-	# TODO Critical
+	# TODO Critical, needs lock
 	zfs rename "$ZFS_FS/images/$imageid/z"@clean "$ZFS_FS/images/$imageid/z"@imageclean
 	zfs promote "$ZFS_FS/images/$imageid/z"
 	zfs send -i "$ZFS_FS/images/$imageid/z"@clean "$ZFS_FS/images/$imageid/z"@imageclean > "$tmp_dir"/z.send

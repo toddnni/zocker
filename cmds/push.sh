@@ -3,7 +3,7 @@ then
 	echo "Send a tagged image to the repository"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -61,7 +61,7 @@ recurse_clean_unused_images() {
 		parent=`ssh "$REPOSITORY" cat "$DIR_IN_REPO/$imageid/parent"`
 		ssh "$REPOSITORY" "rm '$DIR_IN_REPO/$imageid/tar' \
 			'$DIR_IN_REPO/$imageid/parent';
-	       		rmdir '$DIR_IN_REPO/$imageid'"
+			rmdir '$DIR_IN_REPO/$imageid'"
 		echo "Push: Cleaned unreferenced $imageid"
 		recurse_clean_unused_images "$parent"
 	fi

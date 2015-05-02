@@ -3,7 +3,7 @@ then
 	echo "Receive a tagged image from the repository"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -21,7 +21,7 @@ recurse_pull_parent() {
 
 	parent=`ssh "$REPOSITORY" cat "$DIR_IN_REPO/$imageid/parent"`
 	if ! [ "$parent" = '-' ]
-	then	
+	then
 		recurse_pull_parent "$parent"
 	fi
 	ssh "$REPOSITORY" cat "$DIR_IN_REPO/$imageid/tar" | sh "$CMDS"/load.sh

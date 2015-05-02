@@ -3,13 +3,12 @@ then
 	echo "Remove an image"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
 	echo "usage: rmi [-h] <image> [<image> ..]"
 }
-
 
 recurse_remove_unused_images() {
 	local imageid images_dir jails_dir parent
@@ -30,7 +29,7 @@ recurse_remove_unused_images() {
 		return
 	fi
 	if [ `ls -t "$jails_dir" | grep -v run | wc -l` -ne 0 ] && \
-		grep -q "$imageid" "$jails_dir"/*/imageid 
+		grep -q "$imageid" "$jails_dir"/*/imageid
 	then
 		echo "Image '$imageid' has children containers, won't remove"
 		return
@@ -90,7 +89,3 @@ do
 	recurse_remove_unused_images "$imageid" 0
 
 done
-
-
-
-

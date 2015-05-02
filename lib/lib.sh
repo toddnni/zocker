@@ -84,7 +84,7 @@ clone_parent_and_receive_on_new_image() {
 	local parent_path image_path
 	parent_path="$1"
 	image_path="$2"
-	# TODO Critical
+	# TODO Critical, needs lock
 	zfs clone "$ZFS_FS/images/$parent_path"@clean "$ZFS_FS/images/$image_path"
 	zfs promote "$ZFS_FS/images/$image_path"
 	zfs receive "$ZFS_FS/images/$image_path"@new 

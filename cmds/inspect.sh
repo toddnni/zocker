@@ -3,7 +3,7 @@ then
 	echo "Show information about a container or an image"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {

@@ -3,7 +3,7 @@ then
 	echo "List containers"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {

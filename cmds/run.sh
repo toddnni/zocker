@@ -3,9 +3,10 @@ then
 	echo "Create a container and run it from an image"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
+# Sync with create.sh
 help() {
 	echo "usage: run <opts> <image> [<cmd>]"
 	echo "where <opts> are"

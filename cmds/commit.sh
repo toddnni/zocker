@@ -17,7 +17,7 @@ clone_jail_fs_to_image() {
 	new_image_path="$3"
 	tmp_dir=`get_zfs_path "$ZFS_FS/jails/run"`
 
-	# TODO Critical
+	# TODO Critical, needs lock
 	zfs snapshot "$ZFS_FS/jails/$jail_path"@new
 	zfs promote "$ZFS_FS/jails/$jail_path"
 	zfs send -i "$ZFS_FS/jails/$jail_path"@clean "$ZFS_FS/jails/$jail_path"@new > "$tmp_dir"/commit-stream

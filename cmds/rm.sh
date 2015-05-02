@@ -3,7 +3,7 @@ then
 	echo "Remove a container"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -36,8 +36,8 @@ do
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 	imageid="`cat $jails_dir/$jail/imageid`"
 
-	# Destroy will fail for some reason and sync doesn't help, lets do it
-	# few times
+	# Destroy will fail for some reason when after heavy IO and
+	# sync doesn't help, lets do it few times
 	echo -n "Waiting for filesystem to destroy "
 	for i in `seq 1 60`
 	do

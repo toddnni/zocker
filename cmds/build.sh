@@ -3,7 +3,7 @@ then
 	echo "Build a new image from Zockerfile"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {

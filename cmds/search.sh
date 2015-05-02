@@ -3,7 +3,7 @@ then
 	echo "Search images from the repository"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {

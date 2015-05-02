@@ -3,7 +3,7 @@ then
 	echo "Load a tar archived image from STDIN"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -67,7 +67,7 @@ fi
 if [ -n "$parent" ] && check_zfs_fs "$ZFS_FS/images/$parent"
 then
 	zfs create "$ZFS_FS/images/$imageid"
- 	clone_parent_and_receive_on_new_image "$parent"/z "$imageid"/z < "$tmp_dir"/z.send
+	clone_parent_and_receive_on_new_image "$parent"/z "$imageid"/z < "$tmp_dir"/z.send
 else
 	zfs create "$ZFS_FS/images/$imageid"
 	zfs receive "$ZFS_FS/images/$imageid/z"@clean < "$tmp_dir"/z.send

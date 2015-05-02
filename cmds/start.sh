@@ -3,7 +3,7 @@ then
 	echo "Start a created container"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {

@@ -3,7 +3,7 @@ then
 	echo "Create a container from an image"
 	exit 0
 fi
-set -u 
+set -u
 set -e
 
 help() {
@@ -111,9 +111,9 @@ ip_hostname;"
 	interface='$HOST_INTERFACE';
 	$net_line
 	path='$jails_dir/$name/z';
-       	mount.fstab='$jails_dir/run/$name.fstab';
+	mount.fstab='$jails_dir/run/$name.fstab';
 	exec.jail_user='$user';
-        exec.start='env $env $cmd';
+	exec.start='env $env $cmd';
 }
 EOF
 }
@@ -204,7 +204,7 @@ fi
 
 read_and_merge_vars_from_images "$imageid"
 
-set_defaults_if_not_set 
+set_defaults_if_not_set
 
 zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
 zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z
