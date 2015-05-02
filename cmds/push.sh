@@ -51,22 +51,6 @@ tag_image_in_repo() {
 	fi
 }
 
-recurse_clean_unused_images() {
-	local imageid parent
-	imageid="$1"
-
-	if ! ssh "$REPOSITORY" "grep -qr '$imageid' '$DIR_IN_REPO/tags' || \
-		grep -qr --include='*parent' '$imageid' '$DIR_IN_REPO'"
-	then
-		parent=`ssh "$REPOSITORY" cat "$DIR_IN_REPO/$imageid/parent"`
-		ssh "$REPOSITORY" "rm '$DIR_IN_REPO/$imageid/tar' \
-			'$DIR_IN_REPO/$imageid/parent';
-			rmdir '$DIR_IN_REPO/$imageid'"
-		echo "Push: Cleaned unreferenced $imageid"
-		recurse_clean_unused_images "$parent"
-	fi
-}
-
 ## Main
 
 . "$LIB/lib.sh"
