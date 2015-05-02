@@ -1,0 +1,10 @@
+FROM base
+NET build
+
+RUN env ASSUME_ALWAYS_YES=YES pkg bootstrap
+RUN pkg install -y logstash
+# compare /usr/local/etc/rc.d/logstash
+ENV JAVA_OPTS="-Des.path.data=/var/db/logstash"
+RUN mkdir -p /var/db/logstash/elasticsearch
+VOLUME /var/empty:/var/db/logstash/elasticsearch:rw
+CMD /usr/local/logstash/bin/logstash agent -f /usr/local/etc/logstash/logstash.conf -- web --port 80

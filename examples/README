@@ -1,0 +1,11 @@
+The examples require that you have 
+1. a resolvable hostname 'build' defined in DNS and
+2. a base container with tag 'base'.
+
+To build a base container from sources use
+sh src.sh
+and tag it
+zocker tag 10.1-RELEASE-p8 base
+
+To build an example use a command like this
+zocker build -t apache apache
