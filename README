@@ -1,0 +1,16 @@
+Zocker
+
+A tool that can manage one process containers on FreeBSD using jails and ZFS. 
+Zocker aims to be a simple, but still functional tool to hack and learn 
+the container concept. The todo list below is long, but the tool is already 
+fully functional and is used to manage applications in a cluster.
+
+TODO
+
+- save architecture into metadata
+- there is not that much error handling and manual cleanups can be necessary in same cases
+- locks are missing from the critical parts
+- ctrl-c in rm deletes imageid but not ZFS fs
+- zocker rm hangs on running instance
+- zocker rmi can't remove tags, all tags are removed when image is deleted
+
