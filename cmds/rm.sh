@@ -32,16 +32,10 @@ do
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 	imageid="`cat $jails_dir/$jail/imageid`"
 
-	# Destroy will fail for some reason when after heavy IO and
-	# sync doesn't help, lets do it few times
-	echo -n "Waiting for filesystem to destroy "
-	for i in `seq 1 60`
-	do
-		sleep 1
-		zfs destroy "$ZFS_FS/jails/$jail"/z 2>/dev/null && break || echo -n '.'
-	done
-	echo
-
+	# Destroy will fail if umount fails, let's do it first
+	zfs umount "$ZFS_FS/jails/$jail"/z
+	zfs umount "$ZFS_FS/jails/$jail"
+	zfs destroy "$ZFS_FS/jails/$jail"/z
 	zfs destroy "$ZFS_FS/jails/$jail"
 	rm -f "$jails_dir/run/$jail".*
 done
