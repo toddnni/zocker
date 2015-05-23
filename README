@@ -11,6 +11,5 @@ TODO
 - there is not that much error handling and manual cleanups can be necessary in same cases
 - locks are missing from the critical parts
 - ctrl-c in rm deletes imageid but not ZFS fs
-- zocker rm hangs on running instance
 - zocker rmi can't remove tags, all tags are removed when image is deleted
 
