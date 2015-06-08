@@ -16,7 +16,7 @@ help() {
 	echo " -e A=X          set environment variable"
 	echo " -u user         set user in container context"
 	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
-	echo " -l [host|none]  networking (def. host)"
+	echo " -l [inet|local|none] networking (def. inet)"
 }
 
 ## Main

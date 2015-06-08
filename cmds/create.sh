@@ -15,7 +15,7 @@ help() {
 	echo " -e A=X          set environment variable"
 	echo " -u user         set user in container context"
 	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
-	echo " -l [host|none]  networking (def. host)"
+	echo " -l [inet|local|none] networking (def. inet)"
 }
 
 create_scratch() {
@@ -118,7 +118,7 @@ set_defaults_if_not_set() {
 	fi
 	if [ -z "$net" ]
 	then
-		net='host'
+		net='inet'
 	fi
 }
 
@@ -148,14 +148,21 @@ generate_run_config() {
 	mkdir -p "$jails_dir/$name/z/etc/"
 	cp -a /etc/resolv.conf /etc/localtime "$jails_dir/$name/z/etc/"
 
-	lo_address=`generate_lo_address`
-	net_line="ip4.addr='$LO_INTERFACE|$lo_address';
-ip4=new;
-ip_hostname;"
-	if [ "$net" = 'none' ]
-	then
-		net_line="ip4=disable;"
-	fi
+	case "$net" in
+		'none')
+			net_line="ip4=disable;"
+			;;
+		'local')
+			lo_address=`generate_lo_address`
+			net_line="ip4.addr='$LO_INTERFACE|$lo_address';"
+			;;
+		'inet')
+			lo_address=`generate_lo_address`
+			net_line="ip4.addr='$LO_INTERFACE|$lo_address';
+	ip4=new;
+	ip_hostname;"
+			;;
+	esac
 
 	cp "$LIB/jail.conf" "$jails_dir/run/$name.conf"
 	cat >> "$jails_dir/run/$name.conf" << EOF
@@ -263,6 +270,11 @@ set_defaults_if_not_set
 
 # Sanitize name
 name=`echo "$name" | tr './' '__'`
+# Change host -> inet for backward compatibility
+if [ "$net" = 'host' ]
+then
+	net='inet'
+fi
 
 zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
 zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z

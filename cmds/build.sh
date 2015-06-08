@@ -44,7 +44,7 @@ net_params() {
 	then
 		echo '-l none'
 	else
-		echo "-l host -f '$net'"
+		echo "-l inet -f '$net'"
 	fi
 }
 

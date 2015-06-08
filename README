@@ -8,11 +8,17 @@ fully functional and is used to manage applications in a cluster.
 Read more about Zocker from the post http://bit.ly/1enEaSH.
 There is a tutorial in the post also.
 
-Changes after the post
+Major changes after the post
 
 1. Zocker will automatically generate a loopback address for a container. Then 
    processes can bind to the loopback address inside containers. However, 
    loopback addresses are accessible from other containers on the same host.
+
+2. -l option changed, now the choises are
+   a. inet (was host), that tries to resolve container name to obtain an IP 
+      address, in addition to a loopback address
+   b. local (new), that provides a loopback address only
+   c. none, that disables networking
 
 TODO
 - save architecture into metadata
