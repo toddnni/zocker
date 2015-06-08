@@ -36,7 +36,8 @@ generate_lo_address() {
 	if [ -f "$jails_dir/run/last_lo_address" ]
 	then
 		last_address=`cat "$jails_dir/run/last_lo_address"`
-		address=`recurse_lo_address "$last_address"` || if [ "$?" -ne 127 ]
+		address=`recurse_lo_address "$last_address"`
+	       	if ! [ "${address%%.*}" = '127' ]
 		then
 			echo "Error: Container creation interrupted, run out of local addresses!" >&2
 			exit 1
@@ -59,7 +60,7 @@ recurse_lo_address() {
 		increase=y
 		remaining=
 	else
-		remaining=`recurse_lo_address "$remaining"` || true
+		remaining=`recurse_lo_address "$remaining"`
 		if [ "${remaining%%.*}" = '256' ]
 		then
 			if echo "$remaining" | grep -q '\.'
@@ -79,7 +80,6 @@ recurse_lo_address() {
 	fi
 
 	echo "${first_part}${remaining}"
-	return "$first_part"
 }
 
 # next use all argv variables
