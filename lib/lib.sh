@@ -1,4 +1,5 @@
 UUID_LENGTH=36
+LO_INTERFACE=lo0
 
 load_configs() {
 	. "$DIR/config.default"

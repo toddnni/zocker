@@ -30,6 +30,58 @@ create_scratch() {
 	tag_image "$imageid" 'scratch'
 }
 
+generate_lo_address() {
+	local jails_dir last_address address
+	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
+	if [ -f "$jails_dir/run/last_lo_address" ]
+	then
+		last_address=`cat "$jails_dir/run/last_lo_address"`
+		address=`recurse_lo_address "$last_address"` || if [ "$?" -ne 127 ]
+		then
+			echo "Error: Container creation interrupted, run out of local addresses!" >&2
+			exit 1
+		fi
+	else
+		address="$FIRST_LO_ADDRESS"
+	fi
+	echo "$address" > "$jails_dir/run/last_lo_address"
+	echo "$address"
+}
+
+recurse_lo_address() {
+	local first_part remaining increase
+	first_part="${1%%.*}"
+	remaining="${1#*.}"
+	increase=
+	
+	if echo "$1" | grep -qv '\.'
+	then
+		increase=y
+		remaining=
+	else
+		remaining=`recurse_lo_address "$remaining"` || true
+		if [ "${remaining%%.*}" = '256' ]
+		then
+			if echo "$remaining" | grep -q '\.'
+			then
+				remaining="255.${remaining#*.}"
+			else
+				remaining=255
+			fi
+			increase=y
+		fi
+		remaining=".$remaining"
+	fi
+
+	if [ -n "$increase" ]
+	then
+		first_part="$(( $first_part + 1 ))"
+	fi
+
+	echo "${first_part}${remaining}"
+	return "$first_part"
+}
+
 # next use all argv variables
 
 read_and_merge_vars_from_images() {
@@ -83,7 +135,7 @@ save_config() {
 }
 
 generate_run_config() {
-	local jails_dir
+	local jails_dir net_line lo_address
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 
 	echo "# Device Mountpoint FStype Options Dump Pass#" > "$jails_dir/run/$name.fstab"
@@ -96,7 +148,9 @@ generate_run_config() {
 	mkdir -p "$jails_dir/$name/z/etc/"
 	cp -a /etc/resolv.conf /etc/localtime "$jails_dir/$name/z/etc/"
 
-	net_line="ip4=new;
+	lo_address=`generate_lo_address`
+	net_line="ip4.addr='$LO_INTERFACE|$lo_address';
+ip4=new;
 ip_hostname;"
 	if [ "$net" = 'none' ]
 	then

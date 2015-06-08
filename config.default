@@ -3,3 +3,4 @@ ZFS_FS=zocker
 HOST_INTERFACE=trunk0
 REPOSITORY=zocker@test.example.com
 DIR_IN_REPO=zocker_images
+FIRST_LO_ADDRESS=127.0.1.0

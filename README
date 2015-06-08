@@ -8,6 +8,12 @@ fully functional and is used to manage applications in a cluster.
 Read more about Zocker from the post http://bit.ly/1enEaSH.
 There is a tutorial in the post also.
 
+Changes after the post
+
+1. Zocker will automatically generate a loopback address for a container. Then 
+   processes can bind to the loopback address inside containers. However, 
+   loopback addresses are accessible from other containers on the same host.
+
 TODO
 - save architecture into metadata
 - locks and error handling are missing from the critical parts (eg. zfs promote, zfs snapshot),

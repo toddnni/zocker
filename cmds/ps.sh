@@ -51,7 +51,7 @@ do
 	then
 		cmd="`cat $jails_dir/$jail/cmd`"
 	fi
-	if ip="`jls -q -j \"$jail\" ip4.addr 2>/dev/null`"
+	if ip="`jls -q -j \"$jail\" ip4.addr 2>/dev/null | awk -F, '{print $1}'`"
 	then
 		status=up
 	else
