@@ -51,4 +51,4 @@ then
 fi
 
 name=`sh "$CMDS"/create.sh $createargs $@`
-sh "$CMDS"/start.sh "$name"
+exec sh "$CMDS"/start.sh "$name"

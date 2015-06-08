@@ -25,5 +25,5 @@ then
 	done
 	echo "and <opts> are <cmd> specific"
 else
-	sh "$CMDS/$cmd".sh $@
+	exec sh "$CMDS/$cmd".sh $@
 fi
