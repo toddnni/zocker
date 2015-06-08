@@ -168,7 +168,7 @@ ip_hostname;"
 	path='$jails_dir/$name/z';
 	mount.fstab='$jails_dir/run/$name.fstab';
 	exec.jail_user='$user';
-	exec.start="env $env `echo "$cmd" | sed 's|"|\\\"|g'`";
+	exec.start="env `echo "$env $cmd" | sed 's|"|\\\"|g'`";
 }
 EOF
 }
