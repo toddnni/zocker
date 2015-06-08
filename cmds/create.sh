@@ -31,55 +31,34 @@ create_scratch() {
 }
 
 generate_lo_address() {
-	local jails_dir last_address address
+	local jails_dir last_address address anumber
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 	if [ -f "$jails_dir/run/last_lo_address" ]
 	then
 		last_address=`cat "$jails_dir/run/last_lo_address"`
-		address=`recurse_lo_address "$last_address"`
-	       	if ! [ "${address%%.*}" = '127' ]
+		anumber=`echo "$last_address" | awk -F . '{print $1 * 256*256*256 + $2 * 256*256 + $3 * 256 + $4 }'`
+		anumber="$(( $anumber + 1 ))"
+		if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
 		then
 			echo "Error: Container creation interrupted, run out of local addresses!" >&2
 			exit 1
 		fi
+
+		address="$(( $anumber / 256 / 256 / 256 ))"
+
+		anumber="$(( $anumber % (256 * 256 * 256) ))"
+		address="${address}.$(( $anumber / 256 / 256 ))"
+
+		anumber="$(( $anumber % (256 * 256) ))"
+		address="${address}.$(( $anumber / 256 ))"
+
+		anumber="$(( $anumber % 256 ))"
+		address="${address}.$(( $anumber ))"
 	else
 		address="$FIRST_LO_ADDRESS"
 	fi
 	echo "$address" > "$jails_dir/run/last_lo_address"
 	echo "$address"
-}
-
-recurse_lo_address() {
-	local first_part remaining increase
-	first_part="${1%%.*}"
-	remaining="${1#*.}"
-	increase=
-	
-	if echo "$1" | grep -qv '\.'
-	then
-		increase=y
-		remaining=
-	else
-		remaining=`recurse_lo_address "$remaining"`
-		if [ "${remaining%%.*}" = '256' ]
-		then
-			if echo "$remaining" | grep -q '\.'
-			then
-				remaining="255.${remaining#*.}"
-			else
-				remaining=255
-			fi
-			increase=y
-		fi
-		remaining=".$remaining"
-	fi
-
-	if [ -n "$increase" ]
-	then
-		first_part="$(( $first_part + 1 ))"
-	fi
-
-	echo "${first_part}${remaining}"
 }
 
 # next use all argv variables
