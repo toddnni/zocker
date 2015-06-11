@@ -95,7 +95,7 @@ generate_lo_6address() {
 
 merge_volumes_in_volume_list() {
 	awk -F : -v RS=' ' '{helper+=1; print $2 " " helper " " $1 " " $3}' | sort |\
-		awk 'function pr() { print p3 ":" p1 ":" p4 }; { if(p1 != $1 && p1 != "" ) { pr() }; p1=$1; p2=$2; p3=$3; p4=$4}; END { pr() }'
+		awk 'function pr() { printf "%s:%s:%s ", p3, p1, p4 }; { if(p1 != $1 && p1 != "" ) { pr() }; p1=$1; p2=$2; p3=$3; p4=$4}; END { pr() }'
 }
 
 # next use all argv variables
@@ -243,7 +243,7 @@ do
 			user="$OPTARG"
 			;;
 		v)
-			volumes="`printf '%s%s\n' \"${volumes}\" \"${OPTARG}\"`"
+			volumes="`printf '%s%s ' \"${volumes}\" \"${OPTARG}\"`"
 			;;
 		l)
 			net="$OPTARG"
