@@ -30,34 +30,66 @@ create_scratch() {
 	tag_image "$imageid" 'scratch'
 }
 
-generate_lo_address() {
-	local jails_dir last_address address anumber
+check_last_lo_address() {
+	local jails_dir address anumber
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 	if [ -f "$jails_dir/run/last_lo_address" ]
 	then
-		last_address=`cat "$jails_dir/run/last_lo_address"`
-		anumber=`echo "$last_address" | awk -F . '{print $1 * 256*256*256 + $2 * 256*256 + $3 * 256 + $4 }'`
-		anumber="$(( $anumber + 1 ))"
-		if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
-		then
-			echo "Error: Container creation interrupted, run out of local addresses!" >&2
-			exit 1
-		fi
-
-		address="$(( $anumber / 256 / 256 / 256 ))"
-
-		anumber="$(( $anumber % (256 * 256 * 256) ))"
-		address="${address}.$(( $anumber / 256 / 256 ))"
-
-		anumber="$(( $anumber % (256 * 256) ))"
-		address="${address}.$(( $anumber / 256 ))"
-
-		anumber="$(( $anumber % 256 ))"
-		address="${address}.$(( $anumber ))"
+		return
 	else
 		address="$FIRST_LO_ADDRESS"
+		anumber=`echo "$address" | awk -F . '{print $1 * 256*256*256 + $2 * 256*256 + $3 * 256 + $4 }'`
+		echo "$anumber" > "$jails_dir/run/last_lo_address"
 	fi
-	echo "$address" > "$jails_dir/run/last_lo_address"
+}
+
+generate_lo_4address() {
+	local last_anumber address anumber rnum
+
+	last_anumber=`cat "$jails_dir/run/last_lo_address"`
+	anumber="$(( $last_anumber + 1 ))"
+	if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
+	then
+		echo "Error: Container creation interrupted, run out of local addresses!" >&2
+		exit 1
+	fi
+
+	rnum="$anumber"
+	address="$(( $anumber / 256 / 256 / 256 ))"
+
+	rnum="$(( $rnum % (256 * 256 * 256) ))"
+	address="${address}.$(( $rnum / 256 / 256 ))"
+
+	rnum="$(( $rnum % (256 * 256) ))"
+	address="${address}.$(( $rnum / 256 ))"
+
+	rnum="$(( $rnum % 256 ))"
+	address="${address}.$(( $rnum ))"
+
+	echo "$anumber" > "$jails_dir/run/last_lo_address"
+	echo "$address"
+}
+
+generate_lo_6address() {
+	local last_anumber address anumber rnum
+
+	last_anumber=`cat "$jails_dir/run/last_lo_address"`
+	anumber="$(( $last_anumber + 1 ))"
+	if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
+	then
+		echo "Error: Container creation interrupted, run out of local addresses!" >&2
+		exit 1
+	fi
+
+	# We check the previous as we support only numbers that fits in 127.0.0.0/8
+	rnum="$(( anumber - 127 * 256 * 256 * 256 ))"
+	address="fe80:$LO_INTERFACE_IPV6_SCOPE"
+	address="${address}::`echo \"obase=16; $(( $rnum / 256 / 256 ))\" | bc`"
+
+	rnum="$(( $rnum % (256 * 256) ))"
+	address="${address}:`echo \"obase=16; $rnum\" | bc`"
+
+	echo "$anumber" > "$jails_dir/run/last_lo_address"
 	echo "$address"
 }
 
@@ -114,7 +146,7 @@ save_config() {
 }
 
 generate_run_config() {
-	local jails_dir net_line lo_address
+	local jails_dir net_line lo_4address lo_6address
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 
 	echo "# Device Mountpoint FStype Options Dump Pass#" > "$jails_dir/run/$name.fstab"
@@ -127,19 +159,28 @@ generate_run_config() {
 	mkdir -p "$jails_dir/$name/z/etc/"
 	cp -a /etc/resolv.conf /etc/localtime "$jails_dir/$name/z/etc/"
 
+	check_last_lo_address
 	case "$net" in
 		'none')
 			net_line="ip4=disable;"
 			;;
 		'local')
-			lo_address=`generate_lo_address`
-			net_line="ip4.addr='$LO_INTERFACE|$lo_address';"
+			lo_4address=`generate_lo_4address`
+			lo_6address=`generate_lo_6address`
+			net_line="
+	ip4.addr='$LO_INTERFACE|$lo_4address';
+	ip6.addr='$LO_INTERFACE|$lo_6address';
+	"
 			;;
 		'inet')
-			lo_address=`generate_lo_address`
-			net_line="ip4.addr='$LO_INTERFACE|$lo_address';
+			lo_4address=`generate_lo_4address`
+			lo_6address=`generate_lo_6address`
+			net_line="
+	ip4.addr='$LO_INTERFACE|$lo_4address';
+	ip6.addr='$LO_INTERFACE|$lo_6address';
 	ip4=new;
-	ip_hostname;"
+	ip_hostname;
+	"
 			;;
 	esac
 
