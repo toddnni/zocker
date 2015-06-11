@@ -39,8 +39,8 @@ do
 	imageid="`cat $jails_dir/$jail/imageid`"
 
 	# Destroy will fail if umount fails, let's do it first
-	zfs umount "$ZFS_FS/jails/$jail"/z | force_umount "$ZFS_FS/jails/$jail"/z
-	zfs umount "$ZFS_FS/jails/$jail" | force_umount "$ZFS_FS/jails/$jail"
+	zfs umount "$ZFS_FS/jails/$jail"/z || force_umount "$ZFS_FS/jails/$jail"/z
+	zfs umount "$ZFS_FS/jails/$jail" || force_umount "$ZFS_FS/jails/$jail"
 	zfs destroy "$ZFS_FS/jails/$jail"/z
 	zfs destroy "$ZFS_FS/jails/$jail"
 	rm -f "$jails_dir/run/$jail".*
