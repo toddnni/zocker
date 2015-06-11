@@ -30,12 +30,17 @@ then
 	exit 1
 fi
 
+jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 while [ $# -gt 0 ]
 do
 	jail="$1"
 	shift
 
-	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
+	if jls -j "$jail" >/dev/null 2>&1
+	then
+		echo "Error: Container '$jail' is still running!" >&2
+		exit 1
+	fi
 	imageid="`cat $jails_dir/$jail/imageid`"
 
 	# Destroy will fail if umount fails, let's do it first
