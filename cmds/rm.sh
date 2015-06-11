@@ -11,7 +11,7 @@ help() {
 }
 
 force_umount() {
-	echo "Umount $1 failed, let's wait a second and umount it forcefully.."
+	echo "Umount '$1' failed, let's wait a second and umount it forcefully.."
 	sleep 2
 	zfs umount -f "$1"
 }
@@ -39,7 +39,7 @@ do
 	imageid="`cat $jails_dir/$jail/imageid`"
 
 	# Destroy will fail if umount fails, let's do it first
-	zfs umount "$ZFS_FS/jails/$jail"/z || force_umount "$ZFS_FS/jails/$jail"/z
+	zfs umount "$ZFS_FS/jails/$jail"/z || force_umount "$ZFS_FS/jails/$jail"/z
 	zfs umount "$ZFS_FS/jails/$jail" || force_umount "$ZFS_FS/jails/$jail"
 	zfs destroy "$ZFS_FS/jails/$jail"/z
 	zfs destroy "$ZFS_FS/jails/$jail"
