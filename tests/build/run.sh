@@ -19,7 +19,7 @@ grep Zockerfile "$path/root/Zockerfile"
 echo "## Checking parameters:"
 inspect=`zocker inspect testzfile`
 echo "$inspect" |grep user:toor
-echo "$inspect" |grep volumes:/tmp:/mnt:ro
+echo "$inspect" |grep volumes:/var/empty:/mnt:ro
 
 echo "## Run container and check output:"
 output=`zocker run -n baserun testzfile`

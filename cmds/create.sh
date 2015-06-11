@@ -93,6 +93,11 @@ generate_lo_6address() {
 	echo "$address"
 }
 
+merge_volumes_in_volume_list() {
+	awk -F : -v RS=' ' '{helper+=1; print $2 " " helper " " $1 " " $3}' | sort |\
+		awk 'function pr() { print p3 ":" p1 ":" p4 }; { if(p1 != $1 && p1 != "" ) { pr() }; p1=$1; p2=$2; p3=$3; p4=$4}; END { pr() }'
+}
+
 # next use all argv variables
 
 read_and_merge_vars_from_images() {
@@ -120,6 +125,10 @@ read_and_merge_vars_from_images() {
 			fi
 		fi
 	done
+	if [ -n "$volumes" ]
+	then
+		volumes="`echo $volumes | merge_volumes_in_volume_list`"
+	fi
 }
 
 set_defaults_if_not_set() {

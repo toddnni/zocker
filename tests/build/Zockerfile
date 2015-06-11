@@ -7,3 +7,4 @@ USER toor
 ENV a=2 b=3
 CMD env
 VOLUME /tmp:/mnt:ro
+VOLUME /var/empty:/mnt:ro
