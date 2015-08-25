@@ -5,7 +5,10 @@ LO_INTERFACE_IPV6_SCOPE=3
 
 load_configs() {
 	. "$DIR/config.default"
-	[ -f "$DIR/config" ] && . "$DIR/config"
+	if [ -f "$DIR/config" ]
+	then
+		. "$DIR/config"
+	fi
 }
 
 check_zfs_fs() {
