@@ -166,7 +166,11 @@ generate_run_config() {
 
 	# Copy on host
 	mkdir -p "$jails_dir/$name/z/etc/"
-	cp -a /etc/resolv.conf /etc/localtime "$jails_dir/$name/z/etc/"
+	install /etc/resolv.conf "$jails_dir/$name/z/etc/"
+	if [ -f /etc/localtime ]
+	then
+		install /etc/localtime "$jails_dir/$name/z/etc/"
+	fi
 
 	check_last_lo_address
 	case "$net" in
