@@ -2,6 +2,12 @@ The examples require that you have
 1. a resolvable hostname 'build' defined in DNS and
 2. a base container with tag 'base'.
 
+To build a base container using FTP release do
+sh ftp.sh
+(you can provide release and FTP host)
+and tag it
+zocker tag 10.2-RELEASE base
+
 To build a base container from sources use
 sh src.sh
 and tag it

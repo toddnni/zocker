@@ -20,6 +20,9 @@ Major changes after the post
    b. local (new), that provides a loopback address only
    c. none, that disables networking
 
+3. Now there is an example how to create a base image using RELEASE tar 
+   packages.
+
 TODO
 - save architecture into metadata
 - locks and error handling are missing from the critical parts (eg. zfs promote, zfs snapshot),
