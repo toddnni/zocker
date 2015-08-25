@@ -17,6 +17,7 @@ help() {
 	echo " -u user         set user in container context"
 	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
 	echo " -l [inet|local|none] networking (def. inet)"
+	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
 
 ## Main
@@ -26,10 +27,10 @@ load_configs
 check_zfs_dirs
 
 createargs=
-while getopts f:n:e:u:v:l:h arg
+while getopts f:n:e:u:v:l:s:h arg
 do
 	case "$arg" in
-		f|n|e|u|v|l)
+		f|n|e|u|v|l|s)
 			createargs="$createargs -$arg $OPTARG"
 			;;
 		h)

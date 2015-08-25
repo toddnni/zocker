@@ -16,6 +16,7 @@ help() {
 	echo " -u user         set user in container context"
 	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
 	echo " -l [inet|local|none] networking (def. inet)"
+	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
 
 create_scratch() {
@@ -104,7 +105,7 @@ read_and_merge_vars_from_images() {
 	local imageid image_dir
 	imageid="$1"
 	image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
-	for var in imageid parent cmd hostname name user net uuid
+	for var in imageid parent cmd hostname name user net uuid securelevel
 	do
 		if eval "[ -z \"\$${var}\" ]" && [ -f "$image_dir/$var" ]
 		then
@@ -140,12 +141,16 @@ set_defaults_if_not_set() {
 	then
 		net='inet'
 	fi
+	if [ -z "$securelevel" ]
+	then
+		securelevel=0
+	fi
 }
 
 save_config() {
 	local jail_dir
 	jail_dir=`get_zfs_path "$ZFS_FS/jails/$name"`
-	for var in imageid parent cmd hostname name env user net volumes uuid
+	for var in imageid parent cmd hostname name env user net volumes uuid securelevel
 	do
 		if eval "[ -n \"\$${var}\" ]"
 		then
@@ -197,6 +202,16 @@ generate_run_config() {
 			;;
 	esac
 
+	case "$securelevel" in
+		-1|0)
+			chflags_line='allow.chflags = true;'
+			;;
+		*)
+			chflags_line='allow.chflags = false;'
+			;;
+	esac
+
+
 	cp "$LIB/jail.conf" "$jails_dir/run/$name.conf"
 	cat >> "$jails_dir/run/$name.conf" << EOF
 
@@ -209,6 +224,8 @@ generate_run_config() {
 	mount.fstab='$jails_dir/run/$name.fstab';
 	exec.jail_user='$user';
 	exec.start="env `echo "$env $cmd" | sed 's|"|\\\"|g'`";
+	securelevel = $securelevel;
+	$chflags_line
 }
 EOF
 }
@@ -219,18 +236,19 @@ EOF
 load_configs
 check_zfs_dirs
 
+# These will override image settings
 env=
 parent=
 user=
 net=
 volumes=
-# These will override image settings
 uuid=`uuidgen`
 name=`echo "$uuid" | head -c 8 | tr '0-9' 'a-j'`
 hostname=
 hostname_set=
+securelevel=
 
-while getopts f:n:e:u:v:l:h arg
+while getopts f:n:e:u:v:l:s:h arg
 do
 	case "$arg" in
 		f)
@@ -251,6 +269,9 @@ do
 			;;
 		l)
 			net="$OPTARG"
+			;;
+		s)
+			securelevel="$OPTARG"
 			;;
 		h)
 			help

@@ -21,7 +21,7 @@ inspect=`zocker inspect testzfile`
 echo "$inspect" |grep user:toor
 echo "$inspect" |grep 'volumes:/var/empty:/mnt:ro /tmp:/var/tmp:ro'
 
-echo "## Run container and check output:"
+echo "## 1. Run container and check output:"
 output=`zocker run -n baserun testzfile`
 echo "$output" | grep 'a=2'
 echo "$output" | grep 'b=3'
@@ -32,10 +32,18 @@ zocker ps -a |grep baserun
 echo "## Removing container:"
 zocker rm baserun
 
-echo "## Run container with new volumes and check output:"
-output=`zocker run -v /var/run:/var/tmp:ro -n baserun testzfile`
+echo "## 2. Run container with new volumes and check output:"
+zocker run -v /var/run:/var/tmp:ro -n baserun testzfile
 inspect=`zocker inspect baserun`
 echo "$inspect" |grep 'volumes:/var/empty:/mnt:ro /var/run:/var/tmp:ro'
+
+echo "## Removing container:"
+zocker rm baserun
+
+echo "## 3. Run container and check securelevel"
+zocker run -n baserun -s 3 testzfile "sysctl -n kern.securelevel |grep 3"
+inspect=`zocker inspect baserun`
+echo "$inspect" |grep 'securelevel:3'
 
 echo "## Removing container:"
 zocker rm baserun
