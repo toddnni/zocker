@@ -33,7 +33,18 @@ then
 	tmp_dir="$run_dir/$tag"
 fi
 
-mkdir -p "$tmp_dir"
+c=0
+while ! mkdir "$tmp_dir" 2>/dev/null
+do
+	sleep 1
+	c=$((c + 1))
+	if [ "$c" -gt 15 ]
+	then
+		echo "Error: could not lock/create '$tmp_dir' and gave up!" 2>&1
+		exit 1
+	fi
+done
+
 # Reads the input
 tar -x -f - -C "$tmp_dir" 
 
