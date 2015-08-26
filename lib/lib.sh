@@ -82,7 +82,7 @@ find_image_tags() {
 	local imageid tag_dir
 	imageid="$1"
 	tags_dir=`get_zfs_path "$ZFS_FS/images/tags"`
-	cd "$tags_dir"; grep -l "$imageid" * || true
+	cd "$tags_dir"; grep -l "$imageid" * 2>/dev/null || true
 }
 
 get_space_usage() {
