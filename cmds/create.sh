@@ -74,7 +74,7 @@ generate_lo_4address() {
 generate_lo_6address() {
 	local last_anumber address anumber rnum
 
-	interface_scope_id=`ifconfig "$LO_INTERFACE" | awk '/inet6 fe80::1/ {print $6}' | sed 's|0x|ibase=16; |' | bc `
+	interface_scope_id=`ifconfig "$LO_INTERFACE" | awk '/inet6 fe80::1%/ {print $6}' | sed 's|0x|ibase=16; |' | bc `
 	last_anumber=`cat "$jails_dir/run/last_lo_address"`
 	anumber="$(( $last_anumber + 1 ))"
 	if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
