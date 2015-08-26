@@ -1,7 +1,5 @@
 UUID_LENGTH=36
 LO_INTERFACE=lo0
-# specific to interface
-LO_INTERFACE_IPV6_SCOPE=3
 
 load_configs() {
 	. "$DIR/config.default"

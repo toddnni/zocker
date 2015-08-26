@@ -74,6 +74,7 @@ generate_lo_4address() {
 generate_lo_6address() {
 	local last_anumber address anumber rnum
 
+	interface_scope_id=`ifconfig "$LO_INTERFACE" | awk '/inet6 fe80::1/ {print $6}' | sed 's|0x|ibase=16; |' | bc `
 	last_anumber=`cat "$jails_dir/run/last_lo_address"`
 	anumber="$(( $last_anumber + 1 ))"
 	if [ "$(( $anumber / 256 / 256 / 256 ))" -ne 127 ]
@@ -84,7 +85,7 @@ generate_lo_6address() {
 
 	# We check the previous as we support only numbers that fits in 127.0.0.0/8
 	rnum="$(( anumber - 127 * 256 * 256 * 256 ))"
-	address="fe80:$LO_INTERFACE_IPV6_SCOPE"
+	address="fe80:$interface_scope_id"
 	address="${address}::`echo \"obase=16; $(( $rnum / 256 / 256 ))\" | bc`"
 
 	rnum="$(( $rnum % (256 * 256) ))"
