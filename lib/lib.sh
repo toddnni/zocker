@@ -1,5 +1,12 @@
 UUID_LENGTH=36
 LO_INTERFACE=lo0
+IMAGE_FORMAT_VERSION=z1
+SCRATCH_ID='00000000-0000-0000-0000-000000000000'
+
+init_lib() {
+	load_configs
+	check_zfs_dirs
+}
 
 load_configs() {
 	. "$DIR/config.default"
@@ -101,18 +108,6 @@ freeze_image() {
 	zfs snapshot "$ZFS_FS/images/$imageid"@clean
 }
 
-clone_parent_and_receive_on_new_image() {
-	local parent_path image_path
-	parent_path="$1"
-	image_path="$2"
-	# TODO Critical, needs lock
-	zfs clone "$ZFS_FS/images/$parent_path"@clean "$ZFS_FS/images/$image_path"
-	zfs promote "$ZFS_FS/images/$image_path"
-	zfs receive "$ZFS_FS/images/$image_path"@new 
-	zfs promote "$ZFS_FS/images/$parent_path"
-	zfs rename "$ZFS_FS/images/$image_path"@new "$ZFS_FS/images/$image_path"@clean 
-}
-
 test_repository_connection_or_exit() {
 	if ! ssh "$REPOSITORY" ls > /dev/null
 	then
@@ -136,4 +131,3 @@ recurse_clean_unused_images() {
 		recurse_clean_unused_images "$parent"
 	fi
 }
-

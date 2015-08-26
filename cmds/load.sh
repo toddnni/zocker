@@ -13,8 +13,7 @@ help() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 
@@ -48,7 +47,7 @@ done
 # Reads the input
 tar -x -f - -C "$tmp_dir" 
 
-if ! echo "z0" | diff -q "$tmp_dir"/VERSION -
+if ! echo "$IMAGE_FORMAT_VERSION" | diff -q "$tmp_dir"/VERSION -
 then
 	echo "Error: wrong VERSION in image" >&2
 	rm -r "$tmp_dir"
@@ -61,15 +60,21 @@ if [ -f "$tmp_dir"/parent ]
 then
 	parent="`cat $tmp_dir/parent`"
 fi
-if [ -n "$parent" ] && check_zfs_fs "$ZFS_FS/images/$parent"
+if [ -z "$parent" ]
 then
-	zfs create "$ZFS_FS/images/$imageid"
-	clone_parent_and_receive_on_new_image "$parent"/z "$imageid"/z < "$tmp_dir"/z.send
-else
-	zfs create "$ZFS_FS/images/$imageid"
-	zfs receive "$ZFS_FS/images/$imageid/z"@clean < "$tmp_dir"/z.send
+	echo "Error: parent not defined in image!" >&2
+	rm -r "$tmp_dir"
+	exit 1
+fi
+if ! [ "$parent" = "$SCRATCH_ID" ] && ! check_zfs_fs "$ZFS_FS/images/$parent"
+then
+	echo "Error: parent '$parent' not found from local images!" >&2
+	rm -r "$tmp_dir"
+	exit 1
 fi
 
+zfs create "$ZFS_FS/images/$imageid"
+zfs receive "$ZFS_FS/images/$imageid"/z < "$tmp_dir"/z.send
 image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
 rm "$tmp_dir"/z.send
 rm "$tmp_dir"/VERSION

@@ -19,18 +19,6 @@ help() {
 	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
 
-create_scratch() {
-	local imageid image_dir
-	imageid=`uuidgen`
-	zfs create "$ZFS_FS/images/$imageid"
-	zfs create "$ZFS_FS/images/$imageid"/z
-	zfs snapshot "$ZFS_FS/images/$imageid"/z@clean
-	image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
-	echo "$imageid" > "$image_dir"/imageid
-	freeze_image "$imageid"
-	tag_image "$imageid" 'scratch'
-}
-
 check_last_lo_address() {
 	local jails_dir address anumber
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
@@ -98,6 +86,12 @@ generate_lo_6address() {
 merge_volumes_in_volume_list() {
 	awk -F : -v RS=' ' '{helper+=1; print $2 " " helper " " $1 " " $3}' | sort |\
 		awk 'function pr() { printf "%s:%s:%s ", p3, p1, p4 }; { if(p1 != $1 && p1 != "" ) { pr() }; p1=$1; p2=$2; p3=$3; p4=$4}; END { pr() }'
+}
+
+create_from_scratch() {
+	local name
+	zfs create "$ZFS_FS/jails/$name"
+	zfs create "$ZFS_FS/jails/$name"/z
 }
 
 # next use all argv variables
@@ -234,8 +228,7 @@ EOF
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 # These will override image settings
 env=
@@ -303,12 +296,7 @@ then
 fi
 
 imageid=`get_image "$image"`
-if [ "$image" = 'scratch' ] && [ -z "$imageid" ]
-then
-	create_scratch
-	imageid=`get_image "$image"`
-fi
-if [ -z "$imageid" ]
+if ! [ "$image" = 'scratch' ] && [ -z "$imageid" ]
 then
 	echo "Error: image '$image' not found!" >&2
 	exit 1
@@ -319,7 +307,12 @@ then
 	hostname="$name"
 fi
 
-read_and_merge_vars_from_images "$imageid"
+if [ "$image" = 'scratch' ]
+then
+	imageid="$SCRATCH_ID"
+else
+	read_and_merge_vars_from_images "$imageid"
+fi
 
 set_defaults_if_not_set
 
@@ -331,8 +324,13 @@ then
 	net='inet'
 fi
 
-zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
-zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z
+if [ "$image" = 'scratch' ]
+then
+	create_from_scratch "$name"
+else
+	zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
+	zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z
+fi
 
 save_config
 

@@ -72,8 +72,7 @@ check_count() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 tag=
 

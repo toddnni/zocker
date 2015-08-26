@@ -13,8 +13,7 @@ help() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 
@@ -42,19 +41,19 @@ if [ -f "$image_dir/parent" ]
 then
 	parent="`cat $image_dir/parent`"
 fi
+if [ -z "$parent" ]
+then
+	echo "Error: parent not defined in image!" >&2
+	exit 1
+fi
 
 mkdir -p "$tmp_dir"
-echo "z0" > "$tmp_dir"/VERSION
-if [ -n "$parent" ]
+echo "$IMAGE_FORMAT_VERSION" > "$tmp_dir"/VERSION
+if [  "$parent" = "$SCRATCH_ID" ]
 then
-	# TODO Critical, needs lock
-	zfs rename "$ZFS_FS/images/$imageid/z"@clean "$ZFS_FS/images/$imageid/z"@imageclean
-	zfs promote "$ZFS_FS/images/$imageid/z"
-	zfs send -i "$ZFS_FS/images/$imageid/z"@clean "$ZFS_FS/images/$imageid/z"@imageclean > "$tmp_dir"/z.send
-	zfs promote "$ZFS_FS/images/$parent/z"
-	zfs rename "$ZFS_FS/images/$imageid/z"@imageclean "$ZFS_FS/images/$imageid/z"@clean
-else
 	zfs send "$ZFS_FS/images/$imageid/z"@clean > "$tmp_dir"/z.send
+else
+	zfs send -i "$ZFS_FS/images/$parent/z"@clean "$ZFS_FS/images/$imageid/z"@clean > "$tmp_dir"/z.send
 fi
 tar -cz -f - --exclude=z --strip-components=1 -C "$image_dir" .  -C "$tmp_dir" .
 rm -r "$tmp_dir"

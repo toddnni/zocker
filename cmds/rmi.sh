@@ -38,7 +38,12 @@ recurse_remove_unused_images() {
 	parent=`cat "$images_dir/$imageid/parent"`
 	remove_image "$imageid"
 	echo "Removed image '$imageid'"
-	recurse_remove_unused_images "$parent" 1
+	if [ "$parent" = "$SCRATCH_ID" ]
+	then
+		echo "Only scratch remaining"
+	else
+		recurse_remove_unused_images "$parent" 1
+	fi
 }
 
 remove_image() {
@@ -60,8 +65,7 @@ remove_image() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 

@@ -15,8 +15,7 @@ help() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 all=
 
@@ -66,3 +65,4 @@ do
 		printf "$format" "$tag" "$imageid" "$date" "$usage" "$parent"
 	done
 done
+printf "$format" 'scratch' "$SCRATCH_ID" '-' '0K (0K)' '-'

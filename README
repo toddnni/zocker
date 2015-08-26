@@ -23,10 +23,13 @@ Major changes after the post
 3. Now there is an example how to create a base image using RELEASE tar 
    packages.
 
+4. Switched image transfer from an incremental snapshot on a single filesystem 
+   to an incremental snapshot from a cloned filesystem. This is a backward 
+   incompatible change in saved images and in images in repository. The change 
+   simplifies ZFS commands. Image format version is increased from z0 to z1.
+
 TODO
 - save architecture into metadata
-- locks and error handling are missing from the critical parts (eg. zfs promote, zfs snapshot),
-  this can mess snapshots in some error cases
 - zocker rmi can't remove tags, all tags are removed when image is deleted
 - ctrl-c in rm deletes imageid but not ZFS fs
 - ctrl-c in commit leaves trash snapshots to jail and unfinshed image

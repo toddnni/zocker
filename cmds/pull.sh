@@ -20,7 +20,7 @@ recurse_pull_parent() {
 	fi
 
 	parent=`ssh "$REPOSITORY" cat "$DIR_IN_REPO/$imageid/parent"`
-	if ! [ "$parent" = '-' ]
+	if ! [ "$parent" = "$SCRATCH_ID" ]
 	then
 		recurse_pull_parent "$parent"
 	fi
@@ -31,8 +31,7 @@ recurse_pull_parent() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 

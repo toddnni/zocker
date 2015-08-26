@@ -20,10 +20,9 @@ recurse_push_image() {
 	fi
 
 	image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
-	parent=-
-	if [ -f "$image_dir/parent" ]
+	parent="`cat $image_dir/parent`"
+	if ! [ "$parent" = "$SCRATCH_ID" ]
 	then
-		parent="`cat $image_dir/parent`"
 		recurse_push_image "$parent"
 	fi
 	sh "$CMDS"/save.sh "$imageid" | ssh "$REPOSITORY" \
@@ -54,8 +53,7 @@ tag_image_in_repo() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 

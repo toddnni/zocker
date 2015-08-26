@@ -23,8 +23,7 @@ help() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 createargs=
 while getopts f:n:e:u:v:l:s:h arg

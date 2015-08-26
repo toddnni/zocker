@@ -11,28 +11,27 @@ help() {
 }
 
 clone_jail_fs_to_image() {
-	local jail_path image_path new_image_path tmp_dir
-	jail_path="$1"
-	image_path="$2"
-	new_image_path="$3"
-	tmp_dir=`get_zfs_path "$ZFS_FS/jails/run"`
+	local jail imageid new_imageid path jail_dir
+	jail="$1"
+	imageid="$2"
+	new_imageid="$3"
+	path="$4"
+	jail_dir=`get_zfs_path "$ZFS_FS/jails/$jail"`
 
-	# TODO Critical, needs lock
-	zfs snapshot "$ZFS_FS/jails/$jail_path"@new
-	zfs promote "$ZFS_FS/jails/$jail_path"
-	zfs send -i "$ZFS_FS/jails/$jail_path"@clean "$ZFS_FS/jails/$jail_path"@new > "$tmp_dir"/commit-stream
-	zfs promote "$ZFS_FS/images/$image_path"
-	clone_parent_and_receive_on_new_image "$image_path" "$new_image_path" < "$tmp_dir"/commit-stream
-
-	zfs destroy "$ZFS_FS/jails/$jail_path"@new
-	rm "$tmp_dir"/commit-stream
+	zfs snapshot "$ZFS_FS/jails/${jail}$path"@new
+	if [ -f "$jail_dir/parent" ]
+	then
+		zfs send -i "$ZFS_FS/images/${imageid}$path"@clean "$ZFS_FS/jails/${jail}$path"@new | zfs receive "$ZFS_FS/images/${new_imageid}$path"
+	else
+		zfs send "$ZFS_FS/jails/${jail}$path"@new | zfs receive "$ZFS_FS/images/${new_imageid}$path"
+	fi
+	zfs destroy "$ZFS_FS/jails/${jail}$path"@new
 }
 
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
-check_zfs_dirs
+init_lib
 
 check_getopts_help $@
 
@@ -52,17 +51,16 @@ imageid=`uuidgen`
 jail_dir=`get_zfs_path "$ZFS_FS/jails/$jail"`
 old_imageid="`cat $jail_dir/imageid`"
 
-clone_jail_fs_to_image "$jail" "$old_imageid" "$imageid"
-clone_jail_fs_to_image "$jail"/z "$old_imageid"/z "$imageid"/z
+clone_jail_fs_to_image "$jail" "$old_imageid" "$imageid" ''
+clone_jail_fs_to_image "$jail" "$old_imageid" "$imageid" '/z'
 
 image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
 # image cleanup
-zfs destroy "$ZFS_FS/images/$imageid"@clean
+zfs destroy "$ZFS_FS/images/$imageid"@new
 echo "$imageid" > "$image_dir"/imageid
 echo "$old_imageid" > "$image_dir"/parent
-
 # z Cleanup
-zfs destroy "$ZFS_FS/images/$imageid"/z@clean
+zfs destroy "$ZFS_FS/images/$imageid"/z@new
 rm -f "$image_dir/z/etc/resolv.conf" "$image_dir/z/etc/localtime"
 zfs snapshot "$ZFS_FS/images/$imageid"/z@clean
 

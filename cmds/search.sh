@@ -13,7 +13,7 @@ help() {
 ## Main
 
 . "$LIB/lib.sh"
-load_configs
+init_lib
 
 check_getopts_help $@
 
