@@ -6,6 +6,7 @@ COPY Zockerfile /root/
 USER toor
 ENV a=2 b=3
 CMD env
+VOLUME /tmp:ro
 VOLUME /tmp:/mnt:ro /tmp:/var/tmp:ro
 # replace
 VOLUME /var/empty:/mnt:ro

@@ -18,7 +18,7 @@ grep Zockerfile "$path/root/Zockerfile"
 
 echo "## Checking parameters:"
 zocker inspect testzfile user |grep toor
-zocker inspect testzfile volumes |egrep '^/var/empty:/mnt:ro /tmp:/var/tmp:ro'
+zocker inspect testzfile volumes |egrep '^/var/empty:/mnt:ro /tmp:ro /tmp:/var/tmp:ro'
 
 echo "## 1. Run container and check output:"
 output=`zocker run -n baserun testzfile`
@@ -29,14 +29,14 @@ echo "## Check that container exists:"
 zocker ps -a |grep baserun
 
 echo "## Removing container:"
-zocker rm baserun
+zocker rm -v baserun
 
 echo "## 2. Run container and check securelevel"
 zocker run -n baserun -s 3 testzfile "sysctl -n kern.securelevel |grep 3"
 zocker inspect baserun securelevel |grep '3'
 
 echo "## Removing container:"
-zocker rm baserun
+zocker rm -v baserun
 
 echo "## Removing image:"
 zocker rmi testzfile

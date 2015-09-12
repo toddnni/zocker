@@ -198,7 +198,7 @@ do
 	if [ -n "$commit_and_remove_build" ]
 	then
 		imageid=`sh "$CMDS"/commit.sh "$c_name"`
-		sh "$CMDS"/rm.sh "$c_name"
+		sh "$CMDS"/rm.sh -v "$c_name"
 	fi
 	echo "# - $imageid"
 
