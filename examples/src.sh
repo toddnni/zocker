@@ -5,7 +5,7 @@ set -u
 zocker create -n srcbuild scratch
 
 cd /usr/src
-jail_path=`zocker inspect srcbuild | awk -F : '/^path/ {print $2}'`
+jail_path=`zocker inspect srcbuild path`
 make -j4 buildworld 
 make installworld distribution DESTDIR="${jail_path}/z/"
 

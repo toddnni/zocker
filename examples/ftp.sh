@@ -7,7 +7,7 @@ ARCH=${ARCH-amd64}
 RELEASE=${RELEASE-10.2-RELEASE}
 zocker create -n ftpbuild scratch
 
-jail_path=`zocker inspect ftpbuild | awk -F : '/^path/ {print $2}'`
+jail_path=`zocker inspect ftpbuild path`
 for dist in base.txz lib32.txz
 do
 	echo "# $dist"

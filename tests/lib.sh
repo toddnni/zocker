@@ -36,5 +36,5 @@ test_size_10_M() {
 }
 
 get_path() {
-	zocker inspect "$1" | awk -F : '/^path/ { print $2 }'
+	zocker inspect "$1" path
 }
