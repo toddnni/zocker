@@ -30,8 +30,8 @@ Major changes after the post
 
 5. Improvements in the volume concept. Added automatic volumes that can be 
    created without providing the target. Eg. if '-v /mnt' is provided Zocker 
-   will create a ZFS filesystem and mount it to /mnt. Volumes can also be mounted 
-   from other containers using -V option.
+   will create a ZFS filesystem and mount it to /mnt. Volumes can also be 
+   mounted from other containers using -V option.
 
 TODO
 - save architecture into metadata
