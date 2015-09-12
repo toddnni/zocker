@@ -20,16 +20,20 @@ check_zfs_fs() {
 	zfs list -H "$1" > /dev/null 2>&1
 }
 
+ensure_zfs_fs() {
+	check_zfs_fs "$1" || zfs create "$1"
+}
+
 check_zfs_dirs() {
 	if ! check_zfs_fs "$ZFS_FS"
 	then
 		echo "Error: ZFS filesystem '$ZFS_FS' not found!" >&2
 		exit 1
 	fi
-	check_zfs_fs "$ZFS_FS/images" || zfs create "$ZFS_FS/images"
-	check_zfs_fs "$ZFS_FS/images/tags" || zfs create "$ZFS_FS/images/tags"
-	check_zfs_fs "$ZFS_FS/jails" || zfs create "$ZFS_FS/jails"
-	check_zfs_fs "$ZFS_FS/jails/run" || zfs create "$ZFS_FS/jails/run"
+	ensure_zfs_fs "$ZFS_FS/images"
+	ensure_zfs_fs "$ZFS_FS/images/tags"
+	ensure_zfs_fs "$ZFS_FS/jails"
+	ensure_zfs_fs "$ZFS_FS/jails/run"
 }
 
 get_zfs_path() {
