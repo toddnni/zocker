@@ -15,7 +15,9 @@ help() {
 	echo " -n name         container name"
 	echo " -e A=X          set environment variable"
 	echo " -u user         set user in container context"
-	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
+	echo " -v /host-dir:/jail-dir:r[wo] mount from host"
+	echo " -v /jail-dir[:ro]            create a volume"
+	echo " -V container    mount volumes from a container"
 	echo " -l [inet|local|none] networking (def. inet)"
 	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
@@ -26,10 +28,10 @@ help() {
 init_lib
 
 createargs=
-while getopts f:n:e:u:v:l:s:h arg
+while getopts f:n:e:u:v:V:l:s:h arg
 do
 	case "$arg" in
-		f|n|e|u|v|l|s)
+		f|n|e|u|v|V|l|s)
 			createargs="$createargs -$arg $OPTARG"
 			;;
 		h)

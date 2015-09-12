@@ -20,8 +20,9 @@ help() {
 	echo "  ENV <a>=<va> <b>=<vb>  (commit env)"
 	echo "  CMD <cmd>        (cmd to run when container is started."
 	echo "                    After the last run instruction)"
+	echo "  VOLUME <volume>  (a volume or volumes to create)"
+	echo
 	echo " following are special to Zocker"
-	echo "  VOLUME </host/path:/container/path:ro|rw>"
 	echo "  NET <hostname|none>  (special to zocker. All the following"
 	echo "                        instructions will use the hostname"
 	echo "                        to access internet)"
@@ -159,8 +160,14 @@ do
 			;;
 		VOLUME)
 			check_base_defined "$base_image"
-			check_count 1 $@
-			sh "$CMDS"/create.sh -n "$c_name" -v "$1" "$imageid"
+			check_count -1 $@
+			volume_params=
+			while [ $# -gt 0 ]
+			do
+				volume_params="$volume_params -v $1"
+				shift
+			done
+			sh "$CMDS"/create.sh -n "$c_name" $volume_params "$imageid"
 			commit_and_remove_build=1
 			;;
 		ENV)

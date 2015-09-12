@@ -34,6 +34,7 @@ check_zfs_dirs() {
 	ensure_zfs_fs "$ZFS_FS/images/tags"
 	ensure_zfs_fs "$ZFS_FS/jails"
 	ensure_zfs_fs "$ZFS_FS/jails/run"
+	ensure_zfs_fs "$ZFS_FS/volumes"
 }
 
 get_zfs_path() {

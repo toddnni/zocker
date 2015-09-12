@@ -28,6 +28,16 @@ clone_jail_fs_to_image() {
 	zfs destroy "$ZFS_FS/jails/${jail}$path"@new
 }
 
+clean_local_volumes() {
+	local volume_file volumes_dir
+	volume_file="$1"
+	volumes_dir=`get_zfs_path "$ZFS_FS/volumes"`
+	if [ -f "$volume_file" ]
+	then
+		sed -i '' -e "s|${volumes_dir}/[^:/]*:||" "$volume_file"
+	fi
+}
+
 ## Main
 
 . "$LIB/lib.sh"
@@ -59,6 +69,7 @@ image_dir=`get_zfs_path "$ZFS_FS/images/$imageid"`
 zfs destroy "$ZFS_FS/images/$imageid"@new
 echo "$imageid" > "$image_dir"/imageid
 echo "$old_imageid" > "$image_dir"/parent
+clean_local_volumes "$image_dir"/volumes
 # z Cleanup
 zfs destroy "$ZFS_FS/images/$imageid"/z@new
 rm -f "$image_dir/z/etc/resolv.conf" "$image_dir/z/etc/localtime"

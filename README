@@ -28,6 +28,11 @@ Major changes after the post
    incompatible change in saved images and in images in repository. The change 
    simplifies ZFS commands. Image format version is increased from z0 to z1.
 
+5. Improvements in the volume concept. Added automatic volumes that can be 
+   created without providing the target. Eg. if '-v /mnt' is provided Zocker 
+   will create a ZFS filesystem and mount it to /mnt. Volumes can also be mounted 
+   from other containers using -V option.
+
 TODO
 - save architecture into metadata
 - zocker rmi can't remove tags, all tags are removed when image is deleted

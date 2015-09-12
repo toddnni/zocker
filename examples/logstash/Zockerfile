@@ -6,5 +6,5 @@ RUN pkg install -y logstash
 # compare /usr/local/etc/rc.d/logstash
 ENV JAVA_OPTS="-Des.path.data=/var/db/logstash"
 RUN mkdir -p /var/db/logstash/elasticsearch
-VOLUME /var/empty:/var/db/logstash/elasticsearch:rw
+VOLUME /var/db/logstash/elasticsearch
 CMD /usr/local/logstash/bin/logstash agent -f /usr/local/etc/logstash/logstash.conf -- web --port 80

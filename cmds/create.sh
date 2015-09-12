@@ -14,7 +14,9 @@ help() {
 	echo " -n name         container name"
 	echo " -e A=X          set environment variable"
 	echo " -u user         set user in container context"
-	echo " -v /host-dir:/jail-dir:r[wo] mount volume"
+	echo " -v /host-dir:/jail-dir:r[wo] mount from host"
+	echo " -v /jail-dir[:ro]            create a volume"
+	echo " -V container    mount volumes from a container"
 	echo " -l [inet|local|none] networking (def. inet)"
 	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
@@ -83,9 +85,44 @@ generate_lo_6address() {
 	echo "$address"
 }
 
+check_volume_list_syntax() {
+	# Lines are in form from:to:mode
+	awk -F : -v RS=' ' '{from=$1; to=$2; mode=$3;'"
+		"'if(from == "" || to == "" || mode == "" || NF != 3)'"
+			"'{print "Error: volume \""$0"\" not in form from:to:mode internally"; exit 1 }'"
+		"'}'
+}
+
+expand_volumes_without_source() {
+	local volume from to mode volumes_dir
+	volumes_dir=`get_zfs_path "$ZFS_FS/volumes"`
+	awk -v RS=' ' -F : '{'"
+		"'if(NF==3) { from=$1; to=$2; mode=$3; };'"
+		"'if(NF==2) { from="NEWDIR_"$1; to=$1; mode=$2; };'"
+		"'if(NF==1) { from="NEWDIR_"$1; to=$1; mode="rw"; };'"
+		"'printf "%s:%s:%s\n",from,to,mode'"
+	"'}' | while read volume
+	do
+		from="${volume%%:*}"
+		to="${from#NEWDIR_}"
+		if [ "$from" = "$to" ]
+		then
+			echo -n "$volume "
+		else
+			mode="${volume##*:}"
+			from="$volumes_dir/`uuidgen`"
+			echo -n "$from:$to:$mode "
+		fi
+	done
+}
+
 merge_volumes_in_volume_list() {
-	awk -F : -v RS=' ' '{helper+=1; print $2 " " helper " " $1 " " $3}' | sort |\
-		awk 'function pr() { printf "%s:%s:%s ", p3, p1, p4 }; { if(p1 != $1 && p1 != "" ) { pr() }; p1=$1; p2=$2; p3=$3; p4=$4}; END { pr() }'
+	# This uses helper id to prioritize the last volume definitions in the list
+	# Lines are in form from:to:mode
+	awk -F : -v RS=' ' '{from=$1; to=$2; mode=$3; helper+=1; print to, helper, from, mode}'| sort |\
+		awk 'function pr() { printf "%s:%s:%s ", p_from, p_to, p_mode };'"
+		"'{ if(p_to != $1 && p_to != "") { pr() }; p_to=$1; p_helper=$2; p_from=$3; p_mode=$4 };'"
+		"'END { pr() }'
 }
 
 create_from_scratch() {
@@ -93,6 +130,7 @@ create_from_scratch() {
 	zfs create "$ZFS_FS/jails/$name"
 	zfs create "$ZFS_FS/jails/$name"/z
 }
+
 
 # next use all argv variables
 
@@ -121,10 +159,40 @@ read_and_merge_vars_from_images() {
 			fi
 		fi
 	done
+}
+
+generate_volumes_list() {
+	local jail_dir
+	if [ -n "$volumesfrom" ]
+	then
+		jail_dir=`get_zfs_path "$ZFS_FS/jails/$volumesfrom"`
+		volumes="$volumes `cat \"$jail_dir\"/volumes`"
+	fi
 	if [ -n "$volumes" ]
 	then
-		volumes="`echo $volumes | merge_volumes_in_volume_list`"
+		volumes="`echo -n "$volumes" | expand_volumes_without_source`"
+		echo -n "$volumes" | check_volume_list_syntax >&2
+		volumes="`echo -n "$volumes" | merge_volumes_in_volume_list`"
 	fi
+}
+
+create_data_volumes() {
+	local volume from vol_uuid volumes_dir
+	volumes_dir=`get_zfs_path "$ZFS_FS/volumes"`
+	if [ -z "$volumes" ]
+	then
+		return
+	fi
+
+	for volume in $volumes
+	do
+		from="${volume%%:*}"
+		if [ "`dirname $from`" = "$volumes_dir" ]
+		then
+			vol_uuid=`basename "$from"`
+			ensure_zfs_fs "$ZFS_FS/volumes/$vol_uuid"
+		fi
+	done
 }
 
 set_defaults_if_not_set() {
@@ -236,13 +304,14 @@ parent=
 user=
 net=
 volumes=
+volumesfrom=
 uuid=`uuidgen`
 name=`echo "$uuid" | head -c 8 | tr '0-9' 'a-j'`
 hostname=
 hostname_set=
 securelevel=
 
-while getopts f:n:e:u:v:l:s:h arg
+while getopts f:n:e:u:v:V:l:s:h arg
 do
 	case "$arg" in
 		f)
@@ -260,6 +329,9 @@ do
 			;;
 		v)
 			volumes="`printf '%s%s ' \"${volumes}\" \"${OPTARG}\"`"
+			;;
+		V)
+			volumesfrom="$OPTARG"
 			;;
 		l)
 			net="$OPTARG"
@@ -316,6 +388,8 @@ fi
 
 set_defaults_if_not_set
 
+generate_volumes_list
+
 # Sanitize name
 name=`echo "$name" | tr './' '__'`
 # Change host -> inet for backward compatibility
@@ -331,6 +405,8 @@ else
 	zfs clone "$ZFS_FS/images/$imageid"@clean "$ZFS_FS/jails/$name"
 	zfs clone "$ZFS_FS/images/$imageid"/z@clean "$ZFS_FS/jails/$name"/z
 fi
+
+create_data_volumes
 
 save_config
 

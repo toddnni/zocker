@@ -31,14 +31,7 @@ zocker ps -a |grep baserun
 echo "## Removing container:"
 zocker rm baserun
 
-echo "## 2. Run container with new volumes and check output:"
-zocker run -v /var/run:/var/tmp:ro -n baserun testzfile
-zocker inspect baserun volumes |egrep '^/var/empty:/mnt:ro /var/run:/var/tmp:ro'
-
-echo "## Removing container:"
-zocker rm baserun
-
-echo "## 3. Run container and check securelevel"
+echo "## 2. Run container and check securelevel"
 zocker run -n baserun -s 3 testzfile "sysctl -n kern.securelevel |grep 3"
 zocker inspect baserun securelevel |grep '3'
 

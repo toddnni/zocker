@@ -7,7 +7,8 @@ set -u
 set -e
 
 help() {
-	echo "usage: rm [-h] <container> [<container> ..]"
+	echo "usage: rm [-v] [-h] <container> [<container> ..]"
+	echo " -v will delete the zocker volumes also"
 }
 
 force_umount() {
@@ -21,7 +22,26 @@ force_umount() {
 . "$LIB/lib.sh"
 init_lib
 
-check_getopts_help $@
+remove_volumes=
+
+while getopts vh arg
+do
+	case "$arg" in
+		v)
+			remove_volumes=y
+			;;
+		h)
+			help
+			exit 0
+			;;
+
+		*)
+			help
+			exit 1
+			;;
+	esac
+done
+shift $(( $OPTIND-1 ))
 
 if [ $# -eq 0 ]
 then
@@ -42,10 +62,29 @@ do
 	fi
 	imageid="`cat $jails_dir/$jail/imageid`"
 
+	# Volumes
+	if [ -n "$remove_volumes" ] && [ -f "$jails_dir/$jail/volumes" ]
+	then
+		volumes_dir=`get_zfs_path "$ZFS_FS/volumes"`
+		awk -v RS=' ' '{print $0}' "$jails_dir/$jail/volumes" | while read volume
+		do
+			from="${volume%%:*}"
+			if [ -n "$volume" ] && [ "`dirname $from`" = "$volumes_dir" ]
+			then
+				vol_uuid=`basename "$from"`
+				zfs umount "$ZFS_FS/volumes/$vol_uuid"
+				zfs destroy "$ZFS_FS/volumes/$vol_uuid"
+				echo "Destroyed volume '$vol_uuid'"
+			fi
+		done
+
+	fi
+
 	# Destroy will fail if umount fails, let's do it first
 	zfs umount "$ZFS_FS/jails/$jail"/z || force_umount "$ZFS_FS/jails/$jail"/z
 	zfs umount "$ZFS_FS/jails/$jail" || force_umount "$ZFS_FS/jails/$jail"
 	zfs destroy "$ZFS_FS/jails/$jail"/z
 	zfs destroy "$ZFS_FS/jails/$jail"
 	rm -f "$jails_dir/run/$jail".*
+
 done

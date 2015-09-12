@@ -5,5 +5,5 @@ RUN env ASSUME_ALWAYS_YES=YES pkg bootstrap
 RUN mkdir /apachelogs
 RUN pkg install -y apache24
 COPY httpd.conf /usr/local/etc/apache24
-VOLUME /var/empty:/apachelogs:rw
+VOLUME /apachelogs
 CMD apachectl -D FOREGROUND
