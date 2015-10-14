@@ -17,7 +17,7 @@ help() {
 	echo " -v /host-dir:/jail-dir:r[wo] mount from host"
 	echo " -v /jail-dir[:ro]            create a volume"
 	echo " -V container    mount volumes from a container"
-	echo " -l [inet|local|none] networking (def. inet)"
+	echo " -l [inet|inet4|local|local4|none] networking (def. inet)"
 	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
 
@@ -223,7 +223,7 @@ save_config() {
 }
 
 generate_run_config() {
-	local jails_dir net_line lo_4address lo_6address
+	local jails_dir net_line lo_4address lo_6address inet_conf
 	jails_dir=`get_zfs_path "$ZFS_FS/jails"`
 
 	echo "# Device Mountpoint FStype Options Dump Pass#" > "$jails_dir/run/$name.fstab"
@@ -241,27 +241,33 @@ generate_run_config() {
 	fi
 
 	check_last_lo_address
+	lo_4address=`generate_lo_4address`
+	lo_6address=`generate_lo_6address`
+	net_line="ip4.addr='$LO_INTERFACE|$lo_4address';
+	ip6.addr='$LO_INTERFACE|$lo_6address';
+	"
+	inet_conf="ip4=new;
+	ip_hostname;
+	"
 	case "$net" in
 		'none')
 			net_line="ip4=disable;"
 			;;
 		'local')
-			lo_4address=`generate_lo_4address`
-			lo_6address=`generate_lo_6address`
-			net_line="
-	ip4.addr='$LO_INTERFACE|$lo_4address';
-	ip6.addr='$LO_INTERFACE|$lo_6address';
-	"
+			# The default loopback
+			;;
+		'local4')
+			net_line="ip4.addr='$LO_INTERFACE|$lo_4address';"
 			;;
 		'inet')
-			lo_4address=`generate_lo_4address`
-			lo_6address=`generate_lo_6address`
-			net_line="
-	ip4.addr='$LO_INTERFACE|$lo_4address';
-	ip6.addr='$LO_INTERFACE|$lo_6address';
-	ip4=new;
-	ip_hostname;
-	"
+			# The default loopback +
+			net_line="$net_line
+	$inet_conf"
+			;;
+		'inet4')
+			net_line="ip4.addr='$LO_INTERFACE|$lo_4address';"
+			net_line="$net_line
+	$inet_conf"
 			;;
 	esac
 

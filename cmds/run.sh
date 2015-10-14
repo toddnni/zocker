@@ -18,7 +18,7 @@ help() {
 	echo " -v /host-dir:/jail-dir:r[wo] mount from host"
 	echo " -v /jail-dir[:ro]            create a volume"
 	echo " -V container    mount volumes from a container"
-	echo " -l [inet|local|none] networking (def. inet)"
+	echo " -l [inet|inet4|local|local4|none] networking (def. inet)"
 	echo " -s securelevel  set securelevel (<1 will allow chflags)"
 }
 
