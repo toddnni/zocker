@@ -188,6 +188,7 @@ do
 			sh "$CMDS"/create.sh -n "$c_name" "$imageid"
 			jail_dir=`get_zfs_path "$ZFS_FS/jails/$c_name"`
 			cp -a "$1" "$jail_dir/z/$2"
+			chown -Rhx 0:0 "$jail_dir/z/$2"
 			commit_and_remove_build=1
 			;;
 		*)
