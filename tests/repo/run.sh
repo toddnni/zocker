@@ -3,6 +3,8 @@
 set -e
 set -u
 
+# This requires working repo connection
+
 echo "## Creating images (1):"
 create_10_M scratch test10
 create_10_M test10 test20

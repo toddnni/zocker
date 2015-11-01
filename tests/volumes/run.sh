@@ -60,9 +60,9 @@ zocker inspect volumetest volumes |egrep 'volumes/[0-9a-z\-]+:/var/tmp:ro'
 
 echo "## 4. Creating another container and mounting volumes from another container:"
 zocker run -l local -n volumetest2 -V volumetest localvolume 'grep hellotoo /mnt/out'
-zocker inspect volumetest volumes |egrep 'volumes/[0-9a-z\-]+:/mnt:rw'
-zocker inspect volumetest volumes |egrep 'volumes/[0-9a-z\-]+:/var/tmp:ro'
-volume_paths=`zocker inspect volumetest volumes | awk -v RS=' ' -F : '{print $1}'`
+zocker inspect volumetest2 volumes |egrep 'volumes/[0-9a-z\-]+:/mnt:rw'
+zocker inspect volumetest2 volumes |egrep 'volumes/[0-9a-z\-]+:/var/tmp:ro'
+volume_paths=`zocker inspect volumetest2 volumes | awk -v RS=' ' -F : '{print $1}'`
 test "`zocker inspect volumetest volumes`" = "`zocker inspect volumetest2 volumes`"
 
 echo "## 5. Commit the container and check that all the local paths are purged:"
