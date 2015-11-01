@@ -34,7 +34,7 @@ clean_local_volumes() {
 	volumes_dir=`get_zfs_path "$ZFS_FS/volumes"`
 	if [ -f "$volume_file" ]
 	then
-		sed -i '' -e "s|${volumes_dir}/[^:/]*:||" "$volume_file"
+		sed -i '' -e "s|${volumes_dir}/[^:/]*:||g" "$volume_file"
 	fi
 }
 

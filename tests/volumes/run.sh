@@ -65,6 +65,10 @@ zocker inspect volumetest volumes |egrep 'volumes/[0-9a-z\-]+:/var/tmp:ro'
 volume_paths=`zocker inspect volumetest volumes | awk -v RS=' ' -F : '{print $1}'`
 test "`zocker inspect volumetest volumes`" = "`zocker inspect volumetest2 volumes`"
 
+echo "## 5. Commit the container and check that all the local paths are purged:"
+zocker commit volumetest2 localvolume2
+zocker inspect localvolume2 volumes | egrep '^/mnt:rw /var/tmp:ro'
+
 echo "## Removing the first container:"
 zocker rm volumetest
 
@@ -76,5 +80,6 @@ do
 done
 echo 'All the volumes deleted'
 
-echo "## Removing the image"
+echo "## Removing the images"
+zocker rmi localvolume2
 zocker rmi localvolume
