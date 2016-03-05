@@ -33,8 +33,11 @@ Major changes after the post
    will create a ZFS filesystem and mount it to /mnt. Volumes can also be 
    mounted from other containers using -V option.
 
+Notes
+- We don't need to store CPU architecture information in an image, as image 
+  names need to differ in any case, and we can have the information in naming.
+
 TODO
-- save architecture into metadata
 - zocker rmi can't remove tags, all tags are removed when image is deleted
 - ctrl-c in rm deletes imageid but not ZFS fs
 - ctrl-c in commit leaves trash snapshots to jail and unfinshed image
