@@ -4,7 +4,7 @@ set -u
 
 FREEBSD_HOST=${FREEBSD_HOST-http://ftp.freebsd.org/pub/FreeBSD/releases/}
 ARCH=${ARCH-amd64}
-RELEASE=${RELEASE-10.2-RELEASE}
+RELEASE=${RELEASE-10.3-RELEASE}
 zocker create -n ftpbuild scratch
 
 jail_path=`zocker inspect ftpbuild path`

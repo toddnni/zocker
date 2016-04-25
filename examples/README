@@ -6,7 +6,7 @@ To build a base container using FTP release do
 sh ftp.sh
 (you can provide release and FTP host)
 and tag it
-zocker tag 10.2-RELEASE base
+zocker tag 10.3-RELEASE base
 
 To build a base container from sources use
 sh src.sh
