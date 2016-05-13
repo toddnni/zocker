@@ -21,3 +21,6 @@ zocker rm ftpbuild
 zocker run -n build "$RELEASE" "freebsd-update --not-running-from-cron fetch install; rm -rf /var/db/freebsd-update/files"
 zocker commit build "$RELEASE"
 zocker rm build
+zocker create -n build "$RELEASE" "tcsh"
+zocker commit build "$RELEASE"
+zocker rm build
